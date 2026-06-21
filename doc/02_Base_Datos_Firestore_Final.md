@@ -1,11 +1,11 @@
-# 02 - Base de Datos Firestore Propuesta
+# NEXO 360 - Base de Datos Firestore Final
 
-**Proyecto:** NEXO 360  
-**Objetivo:** Definir la estructura completa recomendada de Firestore después de la reestructuración.
+**Objetivo:** Definir cómo debe quedar Firestore después de la reestructuración final.  
+**Importante:** Esta versión corrige la lógica de permisos y elimina `validate_qr` de Eventos.
 
 ---
 
-## 1. Colecciones principales
+## 1. Colecciones finales recomendadas
 
 ```text
 users
@@ -30,7 +30,7 @@ audit_logs
 
 ## 2. Colecciones mínimas para el MVP
 
-Para una primera versión funcional, estas colecciones son suficientes:
+Para una primera versión escolar, basta con estas:
 
 ```text
 users
@@ -54,9 +54,11 @@ Ruta:
 users/{uid}
 ```
 
-Cada usuario de Firebase Authentication debe tener un documento en `users`.
+Cada usuario de Firebase Authentication debe tener un documento en `users` con el mismo UID.
 
-### Modelo base
+---
+
+## 4. Modelo final de usuario
 
 ```json
 {
@@ -76,54 +78,46 @@ Cada usuario de Firebase Authentication debe tener un documento en `users`.
 }
 ```
 
-### Campos
+---
+
+## 5. Campos principales
 
 | Campo | Descripción |
 |---|---|
-| `uid` | UID del usuario en Firebase Authentication |
+| `uid` | UID de Firebase Authentication |
 | `email` | Correo del usuario |
 | `displayName` | Nombre visible |
-| `accountType` | Tipo de cuenta: `technical`, `teacher`, `student` |
-| `eventRole` | Rol en Eventos: `none`, `guest`, `commissioner`, `organizer` |
-| `eventPermissions` | Opciones disponibles si es comisionado |
+| `accountType` | Tipo de cuenta principal: `technical`, `teacher`, `student` |
+| `eventRole` | Rol en Eventos: `none`, `guest`, `organizer`, `commissioner` |
+| `eventPermissions` | Opciones limitadas si es comisionado |
 | `status` | `active` o `inactive` |
 | `schoolCode` | Código interno |
-| `classId` | Clase asignada |
-| `committeeId` | Comisión asignada |
+| `classId` | Clase asignada, si aplica |
+| `committeeId` | Comité asignado, si aplica |
 | `assignedEventIds` | Eventos asignados |
 | `createdAt` | Fecha de creación |
 | `updatedAt` | Fecha de actualización |
 
 ---
 
-## 4. Usuarios de prueba recomendados
+## 6. Cuentas recomendadas para demo
 
-Sí se recomienda eliminar o dejar de usar las cuentas principales de `organizer` y `committee`.
+Sí se recomienda dejar de usar cuentas principales separadas de `organizer` y `committee`.
 
-Ahora solo deben existir cuentas principales de tipo:
+Las cuentas recomendadas son:
 
-```text
-technical
-teacher
-student
-```
-
-### Cuentas recomendadas para demo
-
-| Cuenta | `accountType` | `eventRole` | Uso |
-|---|---|---|---|
-| Técnico Demo | `technical` | `none` | Administra todo |
-| Docente Invitado Demo | `teacher` | `guest` | Docente que participa en eventos |
-| Docente Organizador Demo | `teacher` | `organizer` | Docente que organiza eventos |
-| Estudiante Invitado Demo | `student` | `guest` | Estudiante normal que participa |
-| Estudiante Organizador Demo | `student` | `organizer` | Estudiante que organiza |
-| Estudiante Comisionado Demo | `student` | `commissioner` | Estudiante con opciones limitadas |
+| Cuenta | accountType | eventRole |
+|---|---|---|
+| Técnico Demo | `technical` | `none` |
+| Docente Invitado Demo | `teacher` | `guest` |
+| Docente Organizador Demo | `teacher` | `organizer` |
+| Estudiante Invitado Demo | `student` | `guest` |
+| Estudiante Organizador Demo | `student` | `organizer` |
+| Estudiante Comisionado Demo | `student` | `commissioner` |
 
 ---
 
-## 5. Ejemplos de usuarios
-
-### Técnico Demo
+## 7. Ejemplo: Técnico Demo
 
 ```json
 {
@@ -143,7 +137,9 @@ student
 }
 ```
 
-### Docente Invitado Demo
+---
+
+## 8. Ejemplo: Docente Invitado Demo
 
 ```json
 {
@@ -163,7 +159,9 @@ student
 }
 ```
 
-### Docente Organizador Demo
+---
+
+## 9. Ejemplo: Docente Organizador Demo
 
 ```json
 {
@@ -183,7 +181,9 @@ student
 }
 ```
 
-### Estudiante Invitado Demo
+---
+
+## 10. Ejemplo: Estudiante Invitado Demo
 
 ```json
 {
@@ -203,7 +203,9 @@ student
 }
 ```
 
-### Estudiante Organizador Demo
+---
+
+## 11. Ejemplo: Estudiante Organizador Demo
 
 ```json
 {
@@ -223,7 +225,9 @@ student
 }
 ```
 
-### Estudiante Comisionado Demo
+---
+
+## 12. Ejemplo: Estudiante Comisionado Demo
 
 ```json
 {
@@ -236,9 +240,10 @@ student
     "view_event_announcements",
     "view_assigned_event",
     "check_in",
-    "validate_qr",
     "request_inventory",
-    "view_map"
+    "view_inventory",
+    "view_map",
+    "create_event_message"
   ],
   "status": "active",
   "schoolCode": "S-003",
@@ -252,77 +257,7 @@ student
 
 ---
 
-## 6. `school_activities`
-
-Ruta:
-
-```text
-school_activities/{activityId}
-```
-
-```json
-{
-  "title": "Actividad de matemática",
-  "description": "Resolver ejercicios de práctica.",
-  "classId": "class-10A",
-  "createdBy": "UID_DOCENTE",
-  "status": "published",
-  "dueDate": "timestamp",
-  "createdAt": "timestamp",
-  "updatedAt": "timestamp"
-}
-```
-
----
-
-## 7. `school_schedules`
-
-Ruta:
-
-```text
-school_schedules/{scheduleId}
-```
-
-```json
-{
-  "classId": "class-10A",
-  "day": "lunes",
-  "startTime": "07:00",
-  "endTime": "07:45",
-  "subject": "Matemática",
-  "teacherId": "UID_DOCENTE",
-  "createdAt": "timestamp"
-}
-```
-
----
-
-## 8. `school_announcements`
-
-Ruta:
-
-```text
-school_announcements/{announcementId}
-```
-
-```json
-{
-  "title": "Aviso escolar de prueba",
-  "message": "Mañana traer cuaderno.",
-  "classId": "class-10A",
-  "audience": "students",
-  "createdBy": "UID_DOCENTE",
-  "createdAt": "timestamp",
-  "updatedAt": "timestamp"
-}
-```
-
-Administran técnicos y docentes.  
-Leen técnicos, docentes y estudiantes.
-
----
-
-## 9. `permissions`
+## 13. Colección `permissions`
 
 Ruta:
 
@@ -330,25 +265,31 @@ Ruta:
 permissions/{permissionId}
 ```
 
-Guarda permisos reales ya aprobados.
+Aquí se guardan permisos reales asignados a estudiantes.
+
+Solo los técnicos pueden crear, editar o eliminar directamente en esta colección.
+
+### Ejemplo
 
 ```json
 {
   "permissionId": "permission-demo-01",
   "studentId": "UID_ESTUDIANTE",
-  "reason": "Salida para actividad autorizada",
+  "studentName": "Estudiante Demo",
+  "classId": "class-10A",
+  "reason": "Salida autorizada para actividad escolar",
   "status": "active",
   "startTime": "timestamp",
   "endTime": "timestamp",
   "createdBy": "UID_TECNICO",
   "approvedBy": "UID_TECNICO",
-  "validatedBy": null,
+  "createdFromRequestId": null,
   "createdAt": "timestamp",
   "updatedAt": "timestamp"
 }
 ```
 
-Estados recomendados:
+### Estados recomendados
 
 ```text
 active
@@ -359,7 +300,7 @@ cancelled
 
 ---
 
-## 10. `permission_requests`
+## 14. Colección `permission_requests`
 
 Ruta:
 
@@ -367,9 +308,28 @@ Ruta:
 permission_requests/{requestId}
 ```
 
-Guarda solicitudes de creación, edición o eliminación hechas por docentes u organizadores.
+Aquí se guardan solicitudes hechas por docentes u organizadores.
 
-### Solicitud de creación
+### Tipos de solicitud
+
+```text
+create
+update
+delete
+```
+
+### Estados de solicitud
+
+```text
+pending
+approved
+denied
+cancelled
+```
+
+---
+
+## 15. Solicitud para crear permiso
 
 ```json
 {
@@ -391,7 +351,9 @@ Guarda solicitudes de creación, edición o eliminación hechas por docentes u o
 }
 ```
 
-### Solicitud de edición
+---
+
+## 16. Solicitud para editar permiso
 
 ```json
 {
@@ -410,7 +372,9 @@ Guarda solicitudes de creación, edición o eliminación hechas por docentes u o
 }
 ```
 
-### Solicitud de eliminación
+---
+
+## 17. Solicitud para eliminar permiso
 
 ```json
 {
@@ -427,24 +391,24 @@ Guarda solicitudes de creación, edición o eliminación hechas por docentes u o
 }
 ```
 
-Estados recomendados:
+---
 
-```text
-pending
-approved
-denied
-cancelled
-```
+## 18. Nota importante sobre aprobación
+
+Las reglas de Firestore permiten que el técnico apruebe o deniegue una solicitud.
+
+Pero Firestore por sí solo no copia automáticamente la solicitud aprobada a la colección `permissions`.
+
+Para el MVP escolar hay dos opciones simples:
+
+1. El técnico aprueba la solicitud y luego crea/edita/elimina manualmente el permiso en `permissions`.
+2. Más adelante se puede automatizar con Cloud Functions, pero no es necesario para esta fase.
 
 ---
 
-## 11. `events`
+## 19. Colecciones de Eventos
 
-Ruta:
-
-```text
-events/{eventId}
-```
+### `events/{eventId}`
 
 ```json
 {
@@ -459,17 +423,7 @@ events/{eventId}
 }
 ```
 
-Administran técnicos y organizadores.
-
----
-
-## 12. `event_announcements`
-
-Ruta:
-
-```text
-event_announcements/{announcementId}
-```
+### `event_announcements/{announcementId}`
 
 ```json
 {
@@ -483,17 +437,7 @@ event_announcements/{announcementId}
 }
 ```
 
-Administran técnicos y organizadores.
-
----
-
-## 13. `event_registrations`
-
-Ruta:
-
-```text
-event_registrations/{registrationId}
-```
+### `event_registrations/{registrationId}`
 
 ```json
 {
@@ -506,18 +450,21 @@ event_registrations/{registrationId}
 }
 ```
 
-Estados:
-
-```text
-pending
-approved
-denied
-checked_in
-```
-
 ---
 
-## 14. Colecciones antiguas que ya no se recomiendan
+## 20. Colecciones antiguas que ya no se deben usar
+
+```text
+announcements
+movement_announcements
+qr_permissions
+assignments
+inventory_items
+map_locations
+committee_messages
+```
+
+Nuevos nombres:
 
 | Antes | Ahora |
 |---|---|

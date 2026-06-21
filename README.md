@@ -1,29 +1,29 @@
-# NEXO 360 - Reestructuración App + Firebase
+# NEXO 360 - Reestructuración Final de App, Firebase y Permisos
 
-Este paquete contiene la nueva propuesta de estructura para NEXO 360.
+Este paquete contiene la versión final corregida de la reestructuración de NEXO 360.
 
 ## Archivos incluidos
 
-- `01_Reestructuracion_General_App.md`
-- `02_Base_Datos_Firestore_Propuesta.md`
-- `03_Plan_Migracion_Firebase.md`
-- `firestore.rules`
+1. `01_Reestructuracion_Final_App.md`  
+   Explica la estructura final de la app en tres secciones: Portal Escolar, Permisos y Eventos.
 
-## Decisión principal
+2. `02_Base_Datos_Firestore_Final.md`  
+   Define cómo debe quedar la base de datos en Firestore, incluyendo usuarios, permisos, solicitudes y eventos.
 
-La app se divide en:
+3. `03_Instrucciones_Cambios_Firebase.md`  
+   Explica paso a paso qué debes modificar en Firebase tomando como base la versión que ya habías hecho.
 
-1. Portal Escolar
-2. Permisos
-3. Eventos
+4. `firestore.rules`  
+   Reglas finales de Firestore para esta versión.
 
-Ahora solo existen tres tipos principales de cuenta:
+## Decisiones finales importantes
 
-- `technical`
-- `teacher`
-- `student`
-
-Y los roles de la sección Eventos se guardan en:
-
-- `eventRole`
-- `eventPermissions`
+- Solo existen tres tipos de cuenta principales: `technical`, `teacher` y `student`.
+- Los roles de Eventos son independientes: `none`, `guest`, `organizer`, `commissioner`.
+- El rol de Eventos no cambia permisos dentro del Portal Escolar.
+- Los técnicos administran permisos directamente.
+- Docentes y organizadores solo envían solicitudes de permisos.
+- Los permisos solo se asignan a estudiantes.
+- Los docentes no tienen QR de permiso.
+- Estudiantes y docentes pueden leer un QR para consultar si un estudiante tiene permiso.
+- Ya no existe una opción llamada `validate_qr` dentro de Eventos.
