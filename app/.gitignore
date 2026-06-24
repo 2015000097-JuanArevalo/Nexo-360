@@ -27,9 +27,11 @@ migrate_working_dir/
 **/doc/api/
 **/ios/Flutter/.last_build_id
 .dart_tool/
+.flutter-plugins
 .flutter-plugins-dependencies
 .pub-cache/
 .pub/
+.packages
 /build/
 /coverage/
 
@@ -43,3 +45,44 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Android / Gradle
+android/.gradle/
+android/local.properties
+android/**/GeneratedPluginRegistrant.java
+
+# iOS / macOS
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+macos/Pods/
+macos/.symlinks/
+macos/Flutter/Flutter.framework
+
+# IDEs
+.idea/
+*.iml
+
+# VS Code - opcional
+.vscode/
+
+# Logs
+*.log
+
+# Environment / secrets
+.env
+.env.*
+*.key
+*.pem
+*serviceAccount*.json
+firebase-adminsdk*.json
+
+# Windows build output
+windows/flutter/ephemeral/
+
+# Linux build output
+linux/flutter/ephemeral/
+
+# macOS build output
+macos/Flutter/ephemeral/

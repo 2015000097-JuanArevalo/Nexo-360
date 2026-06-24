@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "9819698541",
+    "project_id": "nexo-360-9ed4c",
+    "storage_bucket": "nexo-360-9ed4c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9819698541:android:cfb70d86d2e91453409664",
+        "android_client_info": {
+          "package_name": "com.example.nexo_360"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCoS1_Ydr95otITGMwUczkf0zoAFXfVD1Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
