@@ -54,6 +54,7 @@ class AppUser {
   bool get canPublishSchoolContent => isTechnical || isTeacher;
   bool get canRequestPermission => isTeacher || isEventOrganizer;
   bool get canCreatePermission => isTechnical;
+  bool get canCreateEvents => isActive && (isTechnical || isEventOrganizer);
   bool get canManageEventRegistrations => isTechnical || isEventOrganizer;
 
   String get accountLabel {

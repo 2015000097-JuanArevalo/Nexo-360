@@ -1,5 +1,5 @@
 {
-  "note": "Reference only. Prefer the in-app 'Crear evento de demostración' button so timestamps use FieldValue.serverTimestamp().",
+  "note": "Reference only. Prefer Eventos > Crear nuevo evento so timestamps use FieldValue.serverTimestamp().",
   "collection": "events",
   "documentId": "encuentro-juvenil-nexo-2026",
   "data": {

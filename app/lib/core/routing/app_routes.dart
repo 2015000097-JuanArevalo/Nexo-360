@@ -9,6 +9,7 @@ abstract final class AppRoutes {
   static const validatePermission = '/permissions/validate';
   static const pendingPermissionRequests = '/permissions/requests';
   static const events = '/events';
+  static const createEvent = '/events/create';
   static const publicRegistration = '/events/register';
   static const registrationStatus = '/events/status';
   static const registrationAdmin = '/events/admin';

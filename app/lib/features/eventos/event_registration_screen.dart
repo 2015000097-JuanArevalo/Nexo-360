@@ -144,7 +144,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
               icon: Icons.event_busy_outlined,
               title: 'No hay inscripciones abiertas',
               description:
-                  'Un organizador debe publicar el evento de demostración.',
+                  'Un organizador debe crear un evento público con inscripciones abiertas.',
               action: OutlinedButton.icon(
                 onPressed: () => context.push(AppRoutes.registrationStatus),
                 icon: const Icon(Icons.manage_search),

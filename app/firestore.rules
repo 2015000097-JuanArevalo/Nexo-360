@@ -35,6 +35,12 @@ service cloud.firestore {
       return activeUser() && profile().eventRole == 'organizer';
     }
 
+    // accountType and eventRole are independent. Both student and teacher
+    // organizers can manage events; technical accounts can always manage them.
+    function canManageEvents() {
+      return isTechnical() || isOrganizer();
+    }
+
     function isActiveStudent(userId) {
       return exists(/databases/$(database)/documents/users/$(userId))
         && get(/databases/$(database)/documents/users/$(userId)).data.accountType == 'student'
@@ -174,6 +180,7 @@ service cloud.firestore {
         && data.capacity <= 10000
         && data.isPublic is bool
         && data.registrationOpen is bool
+        && (data.registrationOpen == false || data.isPublic == true)
         && data.status in ['active', 'cancelled', 'completed']
         && data.createdBy is string
         && data.createdAt is timestamp
@@ -337,19 +344,19 @@ service cloud.firestore {
     match /events/{eventId} {
       allow read: if resource.data.isPublic == true || activeUser();
 
-      allow create: if (isTechnical() || isOrganizer())
+      allow create: if canManageEvents()
         && validEvent(request.resource.data)
         && request.resource.data.createdBy == request.auth.uid
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time;
 
-      allow update: if (isTechnical() || isOrganizer())
+      allow update: if canManageEvents()
         && validEvent(request.resource.data)
         && request.resource.data.createdBy == resource.data.createdBy
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.updatedAt == request.time;
 
-      allow delete: if isTechnical() || isOrganizer();
+      allow delete: if canManageEvents();
     }
 
     match /event_registrations/{registrationId} {
@@ -373,9 +380,9 @@ service cloud.firestore {
 
       // A random document ID is the public tracking code for this prototype.
       allow get: if true;
-      allow list: if isTechnical() || isOrganizer();
+      allow list: if canManageEvents();
 
-      allow update: if (isTechnical() || isOrganizer())
+      allow update: if canManageEvents()
         && validEventRegistration(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'status', 'updatedAt', 'checkedIn', 'checkedInAt', 'checkedInBy'

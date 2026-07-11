@@ -34,16 +34,18 @@ status: active
 
 También puede administrar eventos una cuenta con `accountType: technical` y `status: active`.
 
-## 4. Crear el evento de demostración
+## 4. Crear un evento
 
 Método recomendado:
 
 1. Inicie sesión como organizador o técnico.
-2. Abra **Eventos**.
-3. Si no hay eventos, pulse **Crear evento de demostración**.
-4. Confirme en Firestore `events/encuentro-juvenil-nexo-2026`.
+2. Abra **Eventos → Crear nuevo evento**.
+3. Complete nombre, ubicación, descripción, capacidad, fecha y hora.
+4. Active **Evento público** y **Inscripciones abiertas**.
+5. Pulse **Crear evento**.
+6. Confirme el documento nuevo en `events`.
 
-El botón escribe timestamps correctos del servidor. Como referencia manual también se incluye `app/tool/milestone5_sample_event.json`; sus textos `FIRESTORE_TIMESTAMP` deben convertirse a valores Timestamp reales en Firebase Console.
+El formulario escribe timestamps correctos del servidor y guarda el UID del creador. Como referencia manual también se incluye `app/tool/milestone5_sample_event.json`; sus textos `FIRESTORE_TIMESTAMP` deben convertirse a valores Timestamp reales en Firebase Console.
 
 ## 5. Probar el checkpoint completo
 
@@ -94,7 +96,7 @@ Cree dos inscripciones adicionales y use **Reservar** y **Rechazar**. La consult
 
 | Síntoma | Corrección |
 | --- | --- |
-| No hay evento en el formulario | Cree el evento demo y confirme `isPublic`, `registrationOpen` y `status: active` |
+| No hay evento en el formulario | Cree un evento y confirme `isPublic`, `registrationOpen` y `status: active` |
 | `permission-denied` al enviar | Publique las reglas; revise que el evento exista y esté abierto |
 | Organizador no ve la lista | Revise `eventRole: organizer`, `status: active` y el UID del perfil |
 | El participante no consulta estado | Use el ID completo del documento y publique las reglas nuevas |

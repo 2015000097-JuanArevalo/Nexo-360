@@ -50,6 +50,38 @@
       }
     },
     {
+      "documentId": "AUTH_UID_STUDENT_ORGANIZER",
+      "data": {
+        "uid": "AUTH_UID_STUDENT_ORGANIZER",
+        "email": "student.organizer@nexo360.com",
+        "displayName": "Estudiante Organizador Demo",
+        "accountType": "student",
+        "eventRole": "organizer",
+        "eventPermissions": [],
+        "status": "active",
+        "schoolCode": "S-ORG-001",
+        "classId": "class-10A",
+        "committeeId": "committee-general",
+        "assignedEventIds": []
+      }
+    },
+    {
+      "documentId": "AUTH_UID_STUDENT_COMMISSIONER",
+      "data": {
+        "uid": "AUTH_UID_STUDENT_COMMISSIONER",
+        "email": "student.commissioner@nexo360.com",
+        "displayName": "Estudiante Comisionado Demo",
+        "accountType": "student",
+        "eventRole": "commissioner",
+        "eventPermissions": [],
+        "status": "active",
+        "schoolCode": "S-COM-001",
+        "classId": "class-10A",
+        "committeeId": "committee-logistics",
+        "assignedEventIds": []
+      }
+    },
+    {
       "documentId": "AUTH_UID_ORGANIZER",
       "data": {
         "uid": "AUTH_UID_ORGANIZER",

@@ -21,32 +21,11 @@ class EventosScreen extends StatefulWidget {
 
 class _EventosScreenState extends State<EventosScreen> {
   late final EventService _service;
-  bool _creatingSample = false;
 
   @override
   void initState() {
     super.initState();
     _service = EventService();
-  }
-
-  Future<void> _createSampleEvent() async {
-    setState(() => _creatingSample = true);
-    try {
-      await _service.createSampleEvent(widget.user);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Evento de demostración creado.')),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('No se pudo crear el evento. Revisa las reglas.'),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => _creatingSample = false);
-    }
   }
 
   @override
@@ -60,8 +39,20 @@ class _EventosScreenState extends State<EventosScreen> {
           accentColor: AppColors.youthCoral,
         ),
         const SizedBox(height: 20),
+        if (widget.user.canCreateEvents) ...[
+          NexoModuleCard(
+            icon: Icons.add_circle_outline,
+            title: 'Crear nuevo evento',
+            description:
+                'Define nombre, fecha, ubicación, capacidad y apertura de inscripciones.',
+            accentColor: AppColors.violet,
+            badge: widget.user.isTechnical ? 'Técnico' : 'Organizador',
+            onTap: () => context.push(AppRoutes.createEvent),
+          ),
+          const SizedBox(height: 12),
+        ],
         StreamBuilder<List<EventRecord>>(
-          stream: _service.watchPublicEvents(),
+          stream: _service.watchEvents(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const SizedBox(
@@ -71,32 +62,24 @@ class _EventosScreenState extends State<EventosScreen> {
             }
             if (snapshot.hasError) {
               return const AppErrorMessage(
-                message: 'No se pudieron consultar los eventos públicos.',
+                message: 'No se pudieron consultar los eventos.',
               );
             }
             final events = snapshot.data ?? const <EventRecord>[];
             if (events.isEmpty) {
               return AppEmptyState(
                 icon: Icons.event_busy_outlined,
-                title: 'No hay eventos publicados',
-                description:
-                    'Crea el evento de demostración para habilitar inscripciones.',
-                action: widget.user.canManageEventRegistrations
+                title: 'No hay eventos',
+                description: 'Crea el primer evento para comenzar.',
+                action: widget.user.canCreateEvents
                     ? FilledButton.icon(
-                        onPressed: _creatingSample ? null : _createSampleEvent,
-                        icon: const Icon(Icons.auto_awesome),
-                        label: Text(
-                          _creatingSample
-                              ? 'Creando...'
-                              : 'Crear evento de demostración',
-                        ),
+                        onPressed: () => context.push(AppRoutes.createEvent),
+                        icon: const Icon(Icons.add_circle_outline),
+                        label: const Text('Crear evento'),
                       )
                     : null,
               );
             }
-            final hasSample = events.any(
-              (event) => event.id == EventService.sampleEventId,
-            );
             return Column(
               children: [
                 ...events.map(
@@ -105,16 +88,19 @@ class _EventosScreenState extends State<EventosScreen> {
                     child: NexoModuleCard(
                       icon: Icons.event_available_outlined,
                       title: event.name,
-                      description:
-                          '${formatSchoolDateTime(event.date)} · ${event.location} · capacidad ${event.capacity}',
+                      description: _eventDescription(event),
                       accentColor: AppColors.youthCoral,
-                      badge: event.registrationOpen
+                      badge: !event.isPublic
+                          ? 'Privado'
+                          : event.registrationOpen
                           ? 'Inscripción abierta'
                           : 'Inscripción cerrada',
-                      badgeTone: event.registrationOpen
+                      badgeTone: !event.isPublic
+                          ? StatusTone.info
+                          : event.registrationOpen
                           ? StatusTone.success
                           : StatusTone.danger,
-                      onTap: event.registrationOpen
+                      onTap: event.isPublic && event.registrationOpen
                           ? () => context.push(
                               Uri(
                                 path: AppRoutes.publicRegistration,
@@ -125,15 +111,6 @@ class _EventosScreenState extends State<EventosScreen> {
                     ),
                   ),
                 ),
-                if (!hasSample && widget.user.canManageEventRegistrations)
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: OutlinedButton.icon(
-                      onPressed: _creatingSample ? null : _createSampleEvent,
-                      icon: const Icon(Icons.auto_awesome),
-                      label: const Text('Crear evento de demostración'),
-                    ),
-                  ),
               ],
             );
           },
@@ -169,6 +146,17 @@ class _EventosScreenState extends State<EventosScreen> {
         ),
       ],
     );
+  }
+
+  String _eventDescription(EventRecord event) {
+    final hasDate = event.date.millisecondsSinceEpoch > 0;
+    final date = hasDate
+        ? formatSchoolDateTime(event.date)
+        : 'Fecha por confirmar';
+    final capacity = event.capacity > 0
+        ? 'capacidad ${event.capacity}'
+        : 'capacidad por confirmar';
+    return '$date · ${event.location} · $capacity';
   }
 }
 

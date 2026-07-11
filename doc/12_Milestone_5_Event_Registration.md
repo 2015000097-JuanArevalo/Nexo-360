@@ -4,7 +4,7 @@
 
 El flujo M15–M16 ya es funcional:
 
-1. Un organizador o técnico crea el evento de demostración desde la app.
+1. Un organizador o técnico crea eventos completos desde la app.
 2. Una persona abre el formulario público sin iniciar sesión.
 3. La inscripción se guarda con estado `pending`.
 4. La app entrega un código de seguimiento único.
@@ -24,7 +24,8 @@ El milestone propuesto usa `registrations/{id}`, pero el repositorio ya había e
 | `app/lib/core/models/event_record.dart` | Modelo de evento |
 | `app/lib/core/models/event_registration.dart` | Modelo de inscripción y check-in |
 | `app/lib/core/services/event_service.dart` | Lecturas y escrituras de Firestore |
-| `app/lib/features/eventos/eventos_screen.dart` | Eventos públicos, creación demo y contador real |
+| `app/lib/features/eventos/create_event_screen.dart` | Formulario protegido de creación de eventos |
+| `app/lib/features/eventos/eventos_screen.dart` | Eventos visibles, acceso de creación y contador real |
 | `app/lib/features/eventos/event_registration_screen.dart` | Formulario público funcional |
 | `app/lib/features/eventos/registration_status_screen.dart` | Consulta pública por código |
 | `app/lib/features/eventos/registration_admin_screen.dart` | Estados y check-in del organizador |
@@ -76,7 +77,7 @@ event_registrations/{registrationId}
 | Listar todas las inscripciones | No | Sí | Sí |
 | Aprobar/reservar/rechazar | No | Sí | Sí |
 | Check-in aprobado | No | Sí | Sí |
-| Crear evento demo | No | Sí | Sí |
+| Crear eventos | No | Sí | Sí |
 
 ## Estados visibles
 

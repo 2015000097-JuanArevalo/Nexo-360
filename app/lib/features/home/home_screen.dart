@@ -178,6 +178,19 @@ class HomeScreen extends StatelessWidget {
       ),
     );
 
+    if (user.canCreateEvents) {
+      items.add(
+        const _DashboardItem(
+          icon: Icons.add_circle_outline,
+          title: 'Crear evento',
+          description: 'Publica un nuevo evento y abre sus inscripciones.',
+          path: AppRoutes.createEvent,
+          color: AppColors.youthCoral,
+          badge: 'Organización',
+        ),
+      );
+    }
+
     if (user.canManageEventRegistrations) {
       items.add(
         const _DashboardItem(

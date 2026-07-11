@@ -5,8 +5,6 @@ import '../models/event_record.dart';
 import '../models/event_registration.dart';
 
 class EventService {
-  static const sampleEventId = 'encuentro-juvenil-nexo-2026';
-
   final FirebaseFirestore _firestore;
 
   EventService({FirebaseFirestore? firestore})
@@ -22,6 +20,14 @@ class EventService {
           events.sort((a, b) => a.date.compareTo(b.date));
           return events;
         });
+  }
+
+  Stream<List<EventRecord>> watchEvents() {
+    return _firestore.collection('events').snapshots().map((snapshot) {
+      final events = snapshot.docs.map(EventRecord.fromDocument).toList();
+      events.sort((a, b) => a.date.compareTo(b.date));
+      return events;
+    });
   }
 
   Future<EventRecord?> loadRegistrationEvent(String? eventId) async {
@@ -44,27 +50,42 @@ class EventService {
     return events.isEmpty ? null : events.first;
   }
 
-  Future<void> createSampleEvent(AppUser user) async {
-    if (!user.canManageEventRegistrations) {
-      throw StateError('El usuario no administra eventos.');
+  Future<String> createEvent({
+    required AppUser creator,
+    required String name,
+    required DateTime date,
+    required String location,
+    required String description,
+    required int capacity,
+    required bool isPublic,
+    required bool registrationOpen,
+  }) async {
+    if (!creator.canCreateEvents) {
+      throw StateError('El usuario no puede crear eventos.');
     }
-    final reference = _firestore.collection('events').doc(sampleEventId);
-    final existing = await reference.get();
-    if (existing.exists) return;
+    if (name.trim().length < 3 ||
+        location.trim().length < 3 ||
+        description.trim().length < 5 ||
+        capacity <= 0 ||
+        capacity > 10000) {
+      throw ArgumentError('Los datos del evento no son válidos.');
+    }
+
+    final reference = _firestore.collection('events').doc();
     await reference.set({
-      'name': 'Encuentro Juvenil NEXO 2026',
-      'date': Timestamp.fromDate(DateTime(2026, 7, 18, 8)),
-      'location': 'Colegio Don Bosco',
-      'description':
-          'Jornada de formación, convivencia y participación juvenil de NEXO 360.',
-      'capacity': 120,
-      'isPublic': true,
-      'registrationOpen': true,
+      'name': name.trim(),
+      'date': Timestamp.fromDate(date),
+      'location': location.trim(),
+      'description': description.trim(),
+      'capacity': capacity,
+      'isPublic': isPublic,
+      'registrationOpen': isPublic && registrationOpen,
       'status': 'active',
-      'createdBy': user.uid,
+      'createdBy': creator.uid,
       'createdAt': FieldValue.serverTimestamp(),
       'updatedAt': FieldValue.serverTimestamp(),
     });
+    return reference.id;
   }
 
   Future<String> submitRegistration({

@@ -46,6 +46,9 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 14. `doc/13_Milestone_5_Firebase_and_Demo.md`
     Explica la configuración y el checkpoint completo del flujo de eventos.
 
+15. `doc/14_Event_Creation_and_Roles.md`
+    Documenta la creación completa de eventos y la matriz teacher/student por rol de evento.
+
 ## Entrega de Milestone 1
 
 `app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, sesión Firebase, rutas protegidas y componentes reutilizables. Consulta los documentos 06 y 07 para instalar y comprobar Milestone 2.

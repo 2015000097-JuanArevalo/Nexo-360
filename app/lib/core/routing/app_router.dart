@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/eventos/event_registration_screen.dart';
+import '../../features/eventos/create_event_screen.dart';
 import '../../features/eventos/eventos_screen.dart';
 import '../../features/eventos/registration_admin_screen.dart';
 import '../../features/eventos/registration_status_screen.dart';
@@ -121,6 +122,10 @@ GoRouter createAppRouter(AppSession session) {
             PendingPermissionRequestsScreen(user: session.user!),
       ),
       GoRoute(
+        path: AppRoutes.createEvent,
+        builder: (context, state) => CreateEventScreen(user: session.user!),
+      ),
+      GoRoute(
         path: AppRoutes.registrationAdmin,
         builder: (context, state) =>
             RegistrationAdminScreen(user: session.user!),
@@ -139,6 +144,7 @@ abstract final class AppRouteAccess {
       AppRoutes.studentPermission => user.isStudent,
       AppRoutes.validatePermission => user.isTechnical || user.isTeacher,
       AppRoutes.pendingPermissionRequests => user.isTechnical,
+      AppRoutes.createEvent => user.canCreateEvents,
       AppRoutes.registrationAdmin => user.canManageEventRegistrations,
       _ => true,
     };

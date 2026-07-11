@@ -26,28 +26,74 @@ void main() {
         AppRouteAccess.canOpen(AppRoutes.registrationAdmin, staff),
         isTrue,
       );
+      expect(AppRouteAccess.canOpen(AppRoutes.createEvent, staff), isTrue);
       expect(
         AppRouteAccess.canOpen(AppRoutes.studentPermission, staff),
         isFalse,
       );
     });
 
-    test('organizer can administer registrations', () {
-      final organizer = _user(accountType: 'teacher', eventRole: 'organizer');
+    test(
+      'teacher organizer can create events and administer registrations',
+      () {
+        final organizer = _user(accountType: 'teacher', eventRole: 'organizer');
 
-      expect(
-        AppRouteAccess.canOpen(AppRoutes.registrationAdmin, organizer),
-        isTrue,
+        expect(
+          AppRouteAccess.canOpen(AppRoutes.registrationAdmin, organizer),
+          isTrue,
+        );
+        expect(
+          AppRouteAccess.canOpen(AppRoutes.createPermission, organizer),
+          isTrue,
+        );
+        expect(
+          AppRouteAccess.canOpen(AppRoutes.createEvent, organizer),
+          isTrue,
+        );
+      },
+    );
+
+    test(
+      'student organizer can create events and administer registrations',
+      () {
+        final organizer = _user(accountType: 'student', eventRole: 'organizer');
+
+        expect(
+          AppRouteAccess.canOpen(AppRoutes.createEvent, organizer),
+          isTrue,
+        );
+        expect(
+          AppRouteAccess.canOpen(AppRoutes.registrationAdmin, organizer),
+          isTrue,
+        );
+      },
+    );
+
+    test('teacher and student guests cannot create events', () {
+      final teacher = _user(accountType: 'teacher', eventRole: 'guest');
+      final student = _user(accountType: 'student', eventRole: 'guest');
+
+      expect(AppRouteAccess.canOpen(AppRoutes.createEvent, teacher), isFalse);
+      expect(AppRouteAccess.canOpen(AppRoutes.createEvent, student), isFalse);
+    });
+
+    test('inactive organizer cannot create events', () {
+      final organizer = _user(
+        accountType: 'student',
+        eventRole: 'organizer',
+        status: 'inactive',
       );
-      expect(
-        AppRouteAccess.canOpen(AppRoutes.createPermission, organizer),
-        isTrue,
-      );
+
+      expect(AppRouteAccess.canOpen(AppRoutes.createEvent, organizer), isFalse);
     });
   });
 }
 
-AppUser _user({required String accountType, required String eventRole}) {
+AppUser _user({
+  required String accountType,
+  required String eventRole,
+  String status = 'active',
+}) {
   return AppUser(
     uid: 'uid',
     email: 'demo@nexo360.com',
@@ -55,7 +101,7 @@ AppUser _user({required String accountType, required String eventRole}) {
     accountType: accountType,
     eventRole: eventRole,
     eventPermissions: const [],
-    status: 'active',
+    status: status,
     schoolCode: 'D-001',
     classId: 'class-10A',
     committeeId: null,
