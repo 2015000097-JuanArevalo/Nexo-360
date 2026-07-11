@@ -8,11 +8,7 @@ class ProfileScreen extends StatefulWidget {
   final AppUser user;
   final Future<void> Function() onSignOut;
 
-  const ProfileScreen({
-    super.key,
-    required this.user,
-    required this.onSignOut,
-  });
+  const ProfileScreen({super.key, required this.user, required this.onSignOut});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -28,7 +24,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       children: [
         const PageHeading(
           title: 'Perfil y ajustes',
-          description: 'Información de la cuenta y preferencias del prototipo.',
+          description: 'Información de la cuenta y preferencias de NEXO 360.',
+          accentColor: AppColors.violet,
         ),
         const SizedBox(height: 20),
         Card(
@@ -36,10 +33,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: const EdgeInsets.all(20),
             child: Row(
               children: [
-                const CircleAvatar(
-                  radius: 32,
-                  backgroundColor: AppColors.accent,
-                  child: Icon(Icons.person, size: 34, color: Colors.white),
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: const BoxDecoration(
+                    gradient: AppColors.youthGradient,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.person,
+                    size: 34,
+                    color: Colors.white,
+                  ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -56,7 +61,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        '${widget.user.accountType} · ${widget.user.eventRole}',
+                        '${widget.user.accountLabel} · ${widget.user.eventRoleLabel}',
                         style: const TextStyle(fontWeight: FontWeight.w700),
                       ),
                     ],
@@ -80,7 +85,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ListTile(
                 leading: const Icon(Icons.lock_outline),
                 title: const Text('Seguridad de la cuenta'),
-                subtitle: const Text('Administrada mediante Firebase Authentication.'),
+                subtitle: const Text(
+                  'Administrada mediante Firebase Authentication.',
+                ),
                 trailing: const Icon(Icons.chevron_right),
                 onTap: () {},
               ),

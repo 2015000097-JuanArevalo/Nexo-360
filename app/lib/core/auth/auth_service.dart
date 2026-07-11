@@ -13,7 +13,7 @@ class AuthService {
   }) {
     return _auth.signInWithEmailAndPassword(
       email: email.trim(),
-      password: password.trim(),
+      password: password,
     );
   }
 

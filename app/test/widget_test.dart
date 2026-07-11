@@ -13,6 +13,6 @@ void main() {
     );
 
     expect(find.text('NEXO 360'), findsOneWidget);
-    expect(find.byIcon(Icons.hub_outlined), findsOneWidget);
+    expect(find.text('N'), findsOneWidget);
   });
 }

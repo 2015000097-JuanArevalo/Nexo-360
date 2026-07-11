@@ -73,7 +73,10 @@ class ActivityBoardScreen extends StatelessWidget {
                 children: [
                   Text(title, style: Theme.of(context).textTheme.titleMedium),
                   const SizedBox(height: 4),
-                  Text(subtitle, style: const TextStyle(color: AppColors.muted)),
+                  Text(
+                    subtitle,
+                    style: const TextStyle(color: AppColors.muted),
+                  ),
                 ],
               ),
             ),
@@ -99,7 +102,10 @@ class ActivityBoardScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text('Nueva actividad', style: Theme.of(context).textTheme.titleLarge),
+            Text(
+              'Nueva actividad',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
             const SizedBox(height: 16),
             const TextField(decoration: InputDecoration(labelText: 'Título')),
             const SizedBox(height: 12),
@@ -108,7 +114,9 @@ class ActivityBoardScreen extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Instrucciones'),
             ),
             const SizedBox(height: 12),
-            const TextField(decoration: InputDecoration(labelText: 'Fecha de entrega')),
+            const TextField(
+              decoration: InputDecoration(labelText: 'Fecha de entrega'),
+            ),
             const SizedBox(height: 16),
             FilledButton(
               onPressed: () => Navigator.pop(context),

@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/nexo_ui.dart';
 
 class EventRegistrationScreen extends StatefulWidget {
   const EventRegistrationScreen({super.key});
 
   @override
-  State<EventRegistrationScreen> createState() => _EventRegistrationScreenState();
+  State<EventRegistrationScreen> createState() =>
+      _EventRegistrationScreenState();
 }
 
 class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
@@ -23,31 +25,36 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
           children: [
             const PageHeading(
               title: 'Encuentro Juvenil NEXO 2026',
-              description: '18 de julio · Colegio NEXO · cupos limitados.',
+              description: '18 de julio · Colegio Don Bosco · cupos limitados.',
+              accentColor: AppColors.youthCoral,
             ),
             const SizedBox(height: 20),
-            TextFormField(
-              decoration: const InputDecoration(labelText: 'Nombre completo'),
+            NexoTextFormField(
+              label: 'Nombre completo',
+              icon: Icons.person_outline,
               validator: (value) => value == null || value.trim().isEmpty
                   ? 'Ingresa tu nombre.'
                   : null,
             ),
             const SizedBox(height: 14),
-            TextFormField(
+            NexoTextFormField(
+              label: 'Correo electrónico',
+              icon: Icons.mail_outline,
               keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Correo electrónico'),
               validator: (value) => value == null || !value.contains('@')
                   ? 'Ingresa un correo válido.'
                   : null,
             ),
             const SizedBox(height: 14),
-            const TextField(
+            const NexoTextFormField(
+              label: 'Teléfono',
+              icon: Icons.phone_outlined,
               keyboardType: TextInputType.phone,
-              decoration: InputDecoration(labelText: 'Teléfono'),
             ),
             const SizedBox(height: 14),
-            const TextField(
-              decoration: InputDecoration(labelText: 'Institución u organización'),
+            const NexoTextFormField(
+              label: 'Institución u organización',
+              icon: Icons.school_outlined,
             ),
             const SizedBox(height: 14),
             OutlinedButton.icon(
@@ -57,22 +64,14 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
             ),
             const SizedBox(height: 16),
             FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 if (!_formKey.currentState!.validate()) return;
-                showDialog<void>(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Diseño confirmado'),
-                    content: const Text(
-                      'En el siguiente milestone, esta acción creará una inscripción con estado pending.',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('Entendido'),
-                      ),
-                    ],
-                  ),
+                await showNexoConfirmationDialog(
+                  context,
+                  title: 'Confirmar inscripción',
+                  message:
+                      'Verifica tus datos antes de enviar la inscripción al evento.',
+                  confirmLabel: 'Enviar',
                 );
               },
               child: const Text('Enviar inscripción'),

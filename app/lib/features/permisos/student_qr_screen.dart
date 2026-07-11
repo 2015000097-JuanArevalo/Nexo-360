@@ -15,6 +15,15 @@ class StudentQrScreen extends StatelessWidget {
       title: 'Mi permiso',
       child: Column(
         children: [
+          const Align(
+            alignment: Alignment.centerLeft,
+            child: PageHeading(
+              title: 'Permiso estudiantil',
+              description: 'Código personal para consulta de autorización.',
+              accentColor: AppColors.cyan,
+            ),
+          ),
+          const SizedBox(height: 18),
           const StatusBadge.success('Permiso activo'),
           const SizedBox(height: 18),
           Card(
@@ -22,7 +31,10 @@ class StudentQrScreen extends StatelessWidget {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  Text(user.displayName, style: Theme.of(context).textTheme.titleLarge),
+                  Text(
+                    user.displayName,
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
                   const SizedBox(height: 6),
                   Text(
                     user.schoolCode ?? 'Sin código escolar',

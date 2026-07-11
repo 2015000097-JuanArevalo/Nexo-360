@@ -16,6 +16,7 @@ class RegistrationAdminScreen extends StatelessWidget {
           const PageHeading(
             title: 'Inscripciones',
             description: 'Encuentro Juvenil NEXO 2026',
+            accentColor: AppColors.youthCoral,
           ),
           const SizedBox(height: 18),
           _registration(
@@ -52,14 +53,24 @@ class RegistrationAdminScreen extends StatelessWidget {
           children: [
             Row(
               children: [
-                const CircleAvatar(child: Icon(Icons.person_outline)),
+                const CircleAvatar(
+                  backgroundColor: Color(0xFFF3E9F8),
+                  foregroundColor: AppColors.violet,
+                  child: Icon(Icons.person_outline),
+                ),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name, style: Theme.of(context).textTheme.titleMedium),
-                      Text(details, style: const TextStyle(color: AppColors.muted)),
+                      Text(
+                        name,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      Text(
+                        details,
+                        style: const TextStyle(color: AppColors.muted),
+                      ),
                     ],
                   ),
                 ),
@@ -71,7 +82,10 @@ class RegistrationAdminScreen extends StatelessWidget {
               spacing: 8,
               runSpacing: 8,
               children: [
-                FilledButton.tonal(onPressed: () {}, child: const Text('Aprobar')),
+                FilledButton.tonal(
+                  onPressed: () {},
+                  child: const Text('Aprobar'),
+                ),
                 OutlinedButton(onPressed: () {}, child: const Text('Reservar')),
                 TextButton(onPressed: () {}, child: const Text('Rechazar')),
               ],

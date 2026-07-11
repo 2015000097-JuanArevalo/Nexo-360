@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_colors.dart';
 
+enum StatusTone { info, success, pending, danger }
+
 class NexoLogo extends StatelessWidget {
   final bool compact;
 
@@ -13,16 +15,23 @@ class NexoLogo extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         Container(
-          width: compact ? 32 : 44,
-          height: compact ? 32 : 44,
+          width: compact ? 34 : 48,
+          height: compact ? 34 : 48,
           decoration: BoxDecoration(
-            color: AppColors.accent,
-            borderRadius: BorderRadius.circular(12),
+            gradient: AppColors.brandGradient,
+            borderRadius: BorderRadius.circular(compact ? 11 : 15),
+            boxShadow: const [
+              BoxShadow(color: Color(0x3300A4D6), blurRadius: 12),
+            ],
           ),
-          child: Icon(
-            Icons.hub_outlined,
-            color: Colors.white,
-            size: compact ? 20 : 27,
+          alignment: Alignment.center,
+          child: Text(
+            'N',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: compact ? 22 : 31,
+              fontWeight: FontWeight.w700,
+            ),
           ),
         ),
         const SizedBox(width: 10),
@@ -32,7 +41,7 @@ class NexoLogo extends StatelessWidget {
             color: compact ? Colors.white : AppColors.primary,
             fontSize: compact ? 18 : 25,
             fontWeight: FontWeight.w700,
-            letterSpacing: .4,
+            letterSpacing: .5,
           ),
         ),
       ],
@@ -40,24 +49,62 @@ class NexoLogo extends StatelessWidget {
   }
 }
 
+class NexoBrandPanel extends StatelessWidget {
+  final double size;
+
+  const NexoBrandPanel({super.key, this.size = 210});
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(24),
+      child: Image.asset(
+        'assets/images/nexo_360_logo.png',
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        semanticLabel: 'Logo NEXO 360',
+      ),
+    );
+  }
+}
+
 class PageHeading extends StatelessWidget {
   final String title;
   final String description;
+  final Color accentColor;
 
   const PageHeading({
     super.key,
     required this.title,
     required this.description,
+    this.accentColor = AppColors.royalBlue,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title, style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: 6),
-        Text(description, style: const TextStyle(color: AppColors.muted)),
+        Container(
+          width: 5,
+          height: 54,
+          decoration: BoxDecoration(
+            color: accentColor,
+            borderRadius: BorderRadius.circular(99),
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: Theme.of(context).textTheme.headlineSmall),
+              const SizedBox(height: 5),
+              Text(description, style: const TextStyle(color: AppColors.muted)),
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -69,6 +116,8 @@ class NexoModuleCard extends StatelessWidget {
   final String description;
   final VoidCallback? onTap;
   final String? badge;
+  final StatusTone badgeTone;
+  final Color accentColor;
 
   const NexoModuleCard({
     super.key,
@@ -77,6 +126,8 @@ class NexoModuleCard extends StatelessWidget {
     required this.description,
     this.onTap,
     this.badge,
+    this.badgeTone = StatusTone.info,
+    this.accentColor = AppColors.royalBlue,
   });
 
   @override
@@ -85,46 +136,60 @@ class NexoModuleCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.all(18),
+        child: IntrinsicHeight(
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F1FA),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(icon, color: AppColors.primary),
-              ),
-              const SizedBox(width: 14),
+              Container(width: 5, color: accentColor),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(
-                          child: Text(
-                            title,
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 48,
+                        height: 48,
+                        decoration: BoxDecoration(
+                          color: accentColor.withValues(alpha: .11),
+                          borderRadius: BorderRadius.circular(14),
                         ),
-                        if (badge != null) StatusBadge.pending(badge!),
+                        child: Icon(icon, color: accentColor),
+                      ),
+                      const SizedBox(width: 14),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    title,
+                                    style: Theme.of(
+                                      context,
+                                    ).textTheme.titleMedium,
+                                  ),
+                                ),
+                                if (badge != null)
+                                  StatusBadge(label: badge!, tone: badgeTone),
+                              ],
+                            ),
+                            const SizedBox(height: 6),
+                            Text(
+                              description,
+                              style: const TextStyle(color: AppColors.muted),
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (onTap != null) ...[
+                        const SizedBox(width: 6),
+                        const Icon(Icons.chevron_right, color: AppColors.muted),
                       ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      description,
-                      style: const TextStyle(color: AppColors.muted),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(width: 6),
-              const Icon(Icons.chevron_right, color: AppColors.muted),
             ],
           ),
         ),
@@ -135,22 +200,32 @@ class NexoModuleCard extends StatelessWidget {
 
 class StatusBadge extends StatelessWidget {
   final String label;
-  final Color foreground;
-  final Color background;
+  final StatusTone tone;
 
-  const StatusBadge._(this.label, this.foreground, this.background);
+  const StatusBadge({
+    super.key,
+    required this.label,
+    this.tone = StatusTone.info,
+  });
 
-  const StatusBadge.success(String label)
-    : this._(label, AppColors.success, AppColors.successSurface);
+  const StatusBadge.success(String label, {Key? key})
+    : this(key: key, label: label, tone: StatusTone.success);
 
-  const StatusBadge.pending(String label)
-    : this._(label, AppColors.pending, AppColors.pendingSurface);
+  const StatusBadge.pending(String label, {Key? key})
+    : this(key: key, label: label, tone: StatusTone.pending);
 
-  const StatusBadge.danger(String label)
-    : this._(label, AppColors.danger, AppColors.dangerSurface);
+  const StatusBadge.danger(String label, {Key? key})
+    : this(key: key, label: label, tone: StatusTone.danger);
 
   @override
   Widget build(BuildContext context) {
+    final (foreground, background) = switch (tone) {
+      StatusTone.success => (AppColors.success, AppColors.successSurface),
+      StatusTone.pending => (AppColors.pending, AppColors.pendingSurface),
+      StatusTone.danger => (AppColors.danger, AppColors.dangerSurface),
+      StatusTone.info => (AppColors.primary, const Color(0xFFE7E9F8)),
+    };
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
@@ -169,26 +244,197 @@ class StatusBadge extends StatelessWidget {
   }
 }
 
+class AppLoadingIndicator extends StatelessWidget {
+  final String message;
+
+  const AppLoadingIndicator({super.key, this.message = 'Cargando...'});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const CircularProgressIndicator(color: AppColors.cyan),
+          const SizedBox(height: 14),
+          Text(message, style: const TextStyle(color: AppColors.muted)),
+        ],
+      ),
+    );
+  }
+}
+
+class AppErrorMessage extends StatelessWidget {
+  final String message;
+  final VoidCallback? onRetry;
+
+  const AppErrorMessage({super.key, required this.message, this.onRetry});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppColors.dangerSurface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(color: AppColors.danger.withValues(alpha: .25)),
+      ),
+      child: Row(
+        children: [
+          const Icon(Icons.error_outline, color: AppColors.danger),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text(
+              message,
+              style: const TextStyle(color: AppColors.danger),
+            ),
+          ),
+          if (onRetry != null)
+            TextButton(onPressed: onRetry, child: const Text('Reintentar')),
+        ],
+      ),
+    );
+  }
+}
+
+class AppEmptyState extends StatelessWidget {
+  final IconData icon;
+  final String title;
+  final String description;
+  final Widget? action;
+
+  const AppEmptyState({
+    super.key,
+    required this.icon,
+    required this.title,
+    required this.description,
+    this.action,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(28),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 54, color: AppColors.muted),
+            const SizedBox(height: 12),
+            Text(title, style: Theme.of(context).textTheme.titleLarge),
+            const SizedBox(height: 6),
+            Text(
+              description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: AppColors.muted),
+            ),
+            if (action != null) ...[const SizedBox(height: 16), action!],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NexoTextFormField extends StatelessWidget {
+  final TextEditingController? controller;
+  final String label;
+  final IconData? icon;
+  final bool obscureText;
+  final TextInputType? keyboardType;
+  final String? Function(String?)? validator;
+  final int maxLines;
+  final Widget? suffixIcon;
+  final ValueChanged<String>? onFieldSubmitted;
+
+  const NexoTextFormField({
+    super.key,
+    this.controller,
+    required this.label,
+    this.icon,
+    this.obscureText = false,
+    this.keyboardType,
+    this.validator,
+    this.maxLines = 1,
+    this.suffixIcon,
+    this.onFieldSubmitted,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      validator: validator,
+      maxLines: obscureText ? 1 : maxLines,
+      onFieldSubmitted: onFieldSubmitted,
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: icon == null ? null : Icon(icon),
+        suffixIcon: suffixIcon,
+      ),
+    );
+  }
+}
+
+Future<bool> showNexoConfirmationDialog(
+  BuildContext context, {
+  required String title,
+  required String message,
+  String confirmLabel = 'Confirmar',
+  String cancelLabel = 'Cancelar',
+  bool destructive = false,
+}) async {
+  final result = await showDialog<bool>(
+    context: context,
+    builder: (context) => AlertDialog(
+      icon: Icon(
+        destructive ? Icons.warning_amber_rounded : Icons.check_circle_outline,
+        color: destructive ? AppColors.danger : AppColors.royalBlue,
+      ),
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context, false),
+          child: Text(cancelLabel),
+        ),
+        FilledButton(
+          style: destructive
+              ? FilledButton.styleFrom(backgroundColor: AppColors.danger)
+              : null,
+          onPressed: () => Navigator.pop(context, true),
+          child: Text(confirmLabel),
+        ),
+      ],
+    ),
+  );
+  return result ?? false;
+}
+
 class PrototypeNotice extends StatelessWidget {
-  const PrototypeNotice({super.key});
+  final String message;
+
+  const PrototypeNotice({
+    super.key,
+    this.message =
+        'Base visual y navegación listas. La persistencia de este flujo se conecta en el siguiente milestone.',
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: const Color(0xFFE8F1FA),
-        borderRadius: BorderRadius.circular(12),
+        color: const Color(0xFFE7E9F8),
+        borderRadius: BorderRadius.circular(14),
       ),
-      child: const Row(
+      child: Row(
         children: [
-          Icon(Icons.design_services_outlined, color: AppColors.primary),
-          SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              'Pantalla congelada para el prototipo. La conexión de datos se completa en el siguiente milestone.',
-            ),
-          ),
+          const Icon(Icons.info_outline, color: AppColors.primary),
+          const SizedBox(width: 10),
+          Expanded(child: Text(message)),
         ],
       ),
     );
@@ -215,6 +461,25 @@ class PrototypeScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class NexoSplashScreen extends StatelessWidget {
+  const NexoSplashScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(
+      backgroundColor: AppColors.navy,
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Center(child: NexoBrandPanel(size: 190)),
+          SizedBox(height: 20),
+          CircularProgressIndicator(color: AppColors.cyan),
+        ],
       ),
     );
   }

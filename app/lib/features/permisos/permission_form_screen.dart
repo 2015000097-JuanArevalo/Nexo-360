@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/models/app_user.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/widgets/nexo_ui.dart';
 
 class PermissionFormScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _PermissionFormScreenState extends State<PermissionFormScreen> {
               description: direct
                   ? 'El permiso quedará activo después de guardarlo.'
                   : 'Un técnico deberá aprobar la solicitud.',
+              accentColor: AppColors.violet,
             ),
             const SizedBox(height: 20),
             DropdownButtonFormField<String>(
@@ -48,26 +50,30 @@ class _PermissionFormScreenState extends State<PermissionFormScreen> {
                   value == null ? 'Selecciona un estudiante.' : null,
             ),
             const SizedBox(height: 14),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Motivo'),
+            const NexoTextFormField(
+              label: 'Motivo',
+              icon: Icons.description_outlined,
               maxLines: 2,
             ),
             const SizedBox(height: 14),
-            TextFormField(
-              decoration: InputDecoration(labelText: 'Destino o actividad'),
+            const NexoTextFormField(
+              label: 'Destino o actividad',
+              icon: Icons.place_outlined,
             ),
             const SizedBox(height: 14),
-            const Row(
+            Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(labelText: 'Inicio'),
+                  child: NexoTextFormField(
+                    label: 'Inicio',
+                    icon: Icons.schedule,
                   ),
                 ),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(labelText: 'Vencimiento'),
+                  child: NexoTextFormField(
+                    label: 'Vencimiento',
+                    icon: Icons.timer_off_outlined,
                   ),
                 ),
               ],

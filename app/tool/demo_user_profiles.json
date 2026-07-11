@@ -1,0 +1,69 @@
+{
+  "instructions": "Replace each AUTH_UID_* placeholder with the UID created in Firebase Authentication, then create users/{uid} manually in Firestore.",
+  "profiles": [
+    {
+      "documentId": "AUTH_UID_TEACHER",
+      "data": {
+        "uid": "AUTH_UID_TEACHER",
+        "email": "teacher@nexo360.com",
+        "displayName": "Docente Demo",
+        "accountType": "teacher",
+        "eventRole": "guest",
+        "eventPermissions": [],
+        "status": "active",
+        "schoolCode": "D-001",
+        "classId": "class-10A",
+        "committeeId": null,
+        "assignedEventIds": ["event-demo-01"]
+      }
+    },
+    {
+      "documentId": "AUTH_UID_STUDENT",
+      "data": {
+        "uid": "AUTH_UID_STUDENT",
+        "email": "student@nexo360.com",
+        "displayName": "Estudiante Demo",
+        "accountType": "student",
+        "eventRole": "guest",
+        "eventPermissions": [],
+        "status": "active",
+        "schoolCode": "S-001",
+        "classId": "class-10A",
+        "committeeId": null,
+        "assignedEventIds": ["event-demo-01"]
+      }
+    },
+    {
+      "documentId": "AUTH_UID_STAFF",
+      "data": {
+        "uid": "AUTH_UID_STAFF",
+        "email": "staff@nexo360.com",
+        "displayName": "Personal Técnico Demo",
+        "accountType": "technical",
+        "eventRole": "none",
+        "eventPermissions": [],
+        "status": "active",
+        "schoolCode": "T-001",
+        "classId": null,
+        "committeeId": null,
+        "assignedEventIds": []
+      }
+    },
+    {
+      "documentId": "AUTH_UID_ORGANIZER",
+      "data": {
+        "uid": "AUTH_UID_ORGANIZER",
+        "email": "organizer@nexo360.com",
+        "displayName": "Organizador Demo",
+        "accountType": "teacher",
+        "eventRole": "organizer",
+        "eventPermissions": [],
+        "status": "active",
+        "schoolCode": "D-002",
+        "classId": "class-10A",
+        "committeeId": "committee-general",
+        "assignedEventIds": ["event-demo-01"]
+      }
+    }
+  ]
+}

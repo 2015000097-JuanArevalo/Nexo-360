@@ -22,9 +22,15 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 6. `doc/05_Prototype_Setup_and_Firebase.md`
    Explica cómo ejecutar Flutter y configurar las cuentas, reglas e índices de Firebase.
 
+7. `doc/06_Milestone_2_Application_Foundation.md`
+   Documenta sesión centralizada, rutas protegidas, dashboards y componentes reutilizables.
+
+8. `doc/07_Milestone_2_Firebase_Configuration.md`
+   Contiene la configuración exacta de las cuentas demo y las verificaciones de Firebase.
+
 ## Entrega de Milestone 1
 
-`app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, formularios de prototipo y componentes reutilizables. Consulta `doc/04_Milestone_1_Design_Freeze.md` antes de conectar los flujos a Firestore.
+`app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, sesión Firebase, rutas protegidas y componentes reutilizables. Consulta los documentos 06 y 07 para instalar y comprobar Milestone 2.
 
 ## Decisiones finales importantes
 

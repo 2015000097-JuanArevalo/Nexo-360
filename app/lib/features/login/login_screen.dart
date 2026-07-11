@@ -1,14 +1,16 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
-import '../../core/auth/auth_service.dart';
-import '../../core/auth/user_profile_service.dart';
+import '../../core/auth/app_session.dart';
+import '../../core/routing/app_routes.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/nexo_ui.dart';
-import '../eventos/event_registration_screen.dart';
-import '../home/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  final AppSession session;
+
+  const LoginScreen({super.key, required this.session});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -16,8 +18,6 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-  final _authService = AuthService();
-  final _profileService = UserProfileService();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
@@ -32,39 +32,36 @@ class _LoginScreenState extends State<LoginScreen> {
       _isLoading = true;
       _error = null;
     });
+    widget.session.clearError();
 
     try {
-      final credential = await _authService.signIn(
-        email: _emailController.text,
+      await widget.session.signIn(
+        email: _emailController.text.trim(),
         password: _passwordController.text,
       );
-      final uid = credential.user?.uid;
-      if (uid == null) throw Exception('No se pudo obtener el UID.');
-
-      final profile = await _profileService.getUserProfile(uid);
-      if (profile == null) {
-        await _authService.signOut();
-        throw Exception('La cuenta no tiene perfil en Firestore.');
-      }
-      if (!profile.isActive) {
-        await _authService.signOut();
-        throw Exception('La cuenta está inactiva.');
-      }
-      if (!mounted) return;
-
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (_) => HomeScreen(user: profile)),
-      );
+    } on FirebaseAuthException catch (error) {
+      if (mounted) setState(() => _error = _authMessage(error.code));
     } catch (_) {
       if (mounted) {
-        setState(() {
-          _error = 'No se pudo iniciar sesión. Revisa tus credenciales y perfil.';
-        });
+        setState(
+          () => _error = 'No se pudo iniciar sesión. Inténtalo nuevamente.',
+        );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
+  }
+
+  String _authMessage(String code) {
+    return switch (code) {
+      'invalid-credential' ||
+      'wrong-password' ||
+      'user-not-found' => 'El correo o la contraseña no son correctos.',
+      'user-disabled' => 'Esta cuenta fue deshabilitada.',
+      'too-many-requests' => 'Demasiados intentos. Espera un momento.',
+      'network-request-failed' => 'Revisa tu conexión a Internet.',
+      _ => 'Firebase no pudo completar el inicio de sesión.',
+    };
   }
 
   @override
@@ -77,113 +74,146 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.navy,
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 430),
-              child: Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(28),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        const Center(child: NexoLogo()),
-                        const SizedBox(height: 28),
-                        Text(
-                          'Bienvenido',
-                          textAlign: TextAlign.center,
-                          style: Theme.of(context).textTheme.headlineSmall,
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final wide = constraints.maxWidth >= 850;
+            return Center(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 980),
+                  child: wide
+                      ? Row(
+                          children: [
+                            Expanded(child: _brand(wide: true)),
+                            const SizedBox(width: 46),
+                            Expanded(child: _loginCard()),
+                          ],
+                        )
+                      : Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            _brand(wide: false),
+                            const SizedBox(height: 22),
+                            _loginCard(),
+                          ],
                         ),
-                        const SizedBox(height: 6),
-                        const Text(
-                          'Ingresa para acceder a tu espacio escolar.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: AppColors.muted),
-                        ),
-                        const SizedBox(height: 24),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          autofillHints: const [AutofillHints.email],
-                          decoration: const InputDecoration(
-                            labelText: 'Correo electrónico',
-                            prefixIcon: Icon(Icons.mail_outline),
-                          ),
-                          validator: (value) => value == null || !value.contains('@')
-                              ? 'Ingresa un correo válido.'
-                              : null,
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          autofillHints: const [AutofillHints.password],
-                          onFieldSubmitted: (_) {
-                            if (!_isLoading) _login();
-                          },
-                          decoration: InputDecoration(
-                            labelText: 'Contraseña',
-                            prefixIcon: const Icon(Icons.lock_outline),
-                            suffixIcon: IconButton(
-                              onPressed: () => setState(
-                                () => _obscurePassword = !_obscurePassword,
-                              ),
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                            ),
-                          ),
-                          validator: (value) => value == null || value.length < 6
-                              ? 'La contraseña debe tener al menos 6 caracteres.'
-                              : null,
-                        ),
-                        if (_error != null) ...[
-                          const SizedBox(height: 14),
-                          Text(
-                            _error!,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(color: AppColors.danger),
-                          ),
-                        ],
-                        const SizedBox(height: 20),
-                        FilledButton(
-                          onPressed: _isLoading ? null : _login,
-                          child: _isLoading
-                              ? const SizedBox(
-                                  width: 22,
-                                  height: 22,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: Colors.white,
-                                  ),
-                                )
-                              : const Text('Iniciar sesión'),
-                        ),
-                        const SizedBox(height: 10),
-                        OutlinedButton.icon(
-                          onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const EventRegistrationScreen(),
-                            ),
-                          ),
-                          icon: const Icon(Icons.event_available_outlined),
-                          label: const Text('Inscripción pública a eventos'),
-                        ),
-                      ],
-                    ),
-                  ),
                 ),
               ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget _brand({required bool wide}) {
+    return Column(
+      children: [
+        NexoBrandPanel(size: wide ? 330 : 190),
+        if (wide) ...[
+          const SizedBox(height: 16),
+          const Text(
+            'Colegio Don Bosco · Movimiento Juventud',
+            style: TextStyle(
+              color: Color(0xFFBFC7EA),
+              fontWeight: FontWeight.w700,
             ),
           ),
+        ],
+      ],
+    );
+  }
+
+  Widget _loginCard() {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: 440),
+      child: Card(
+        child: Padding(
+          padding: const EdgeInsets.all(28),
+          child: AnimatedBuilder(
+            animation: widget.session,
+            builder: (context, _) => _buildForm(context),
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildForm(BuildContext context) {
+    final errorMessage = _error ?? widget.session.errorMessage;
+    return Form(
+      key: _formKey,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text('Bienvenido', style: Theme.of(context).textTheme.headlineSmall),
+          const SizedBox(height: 6),
+          const Text(
+            'Ingresa a tu espacio académico, de permisos y eventos.',
+            style: TextStyle(color: AppColors.muted),
+          ),
+          const SizedBox(height: 24),
+          NexoTextFormField(
+            controller: _emailController,
+            label: 'Correo electrónico',
+            icon: Icons.mail_outline,
+            keyboardType: TextInputType.emailAddress,
+            validator: (value) => value == null || !value.contains('@')
+                ? 'Ingresa un correo válido.'
+                : null,
+          ),
+          const SizedBox(height: 16),
+          NexoTextFormField(
+            controller: _passwordController,
+            label: 'Contraseña',
+            icon: Icons.lock_outline,
+            obscureText: _obscurePassword,
+            suffixIcon: IconButton(
+              onPressed: () {
+                setState(() => _obscurePassword = !_obscurePassword);
+              },
+              icon: Icon(
+                _obscurePassword
+                    ? Icons.visibility_outlined
+                    : Icons.visibility_off_outlined,
+              ),
+            ),
+            onFieldSubmitted: (_) {
+              if (!_isLoading) _login();
+            },
+            validator: (value) => value == null || value.length < 6
+                ? 'La contraseña debe tener al menos 6 caracteres.'
+                : null,
+          ),
+          if (errorMessage != null) ...[
+            const SizedBox(height: 14),
+            AppErrorMessage(message: errorMessage),
+          ],
+          const SizedBox(height: 20),
+          FilledButton(
+            onPressed: _isLoading ? null : _login,
+            child: _isLoading
+                ? const SizedBox(
+                    width: 22,
+                    height: 22,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.white,
+                    ),
+                  )
+                : const Text('Iniciar sesión'),
+          ),
+          const SizedBox(height: 10),
+          OutlinedButton.icon(
+            onPressed: () => context.push(AppRoutes.publicRegistration),
+            icon: const Icon(Icons.event_available_outlined),
+            label: const Text('Inscripción pública a eventos'),
+          ),
+        ],
       ),
     );
   }

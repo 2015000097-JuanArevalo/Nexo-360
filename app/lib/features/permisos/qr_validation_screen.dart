@@ -23,6 +23,7 @@ class _QrValidationScreenState extends State<QrValidationScreen> {
           const PageHeading(
             title: 'Consulta de permiso',
             description: 'Escanea el QR o escribe el código como respaldo.',
+            accentColor: AppColors.cyan,
           ),
           const SizedBox(height: 18),
           Container(
@@ -41,11 +42,9 @@ class _QrValidationScreenState extends State<QrValidationScreen> {
             ),
           ),
           const SizedBox(height: 14),
-          const TextField(
-            decoration: InputDecoration(
-              labelText: 'Código del permiso',
-              prefixIcon: Icon(Icons.keyboard_outlined),
-            ),
+          const NexoTextFormField(
+            label: 'Código del permiso',
+            icon: Icons.keyboard_outlined,
           ),
           const SizedBox(height: 14),
           FilledButton(
@@ -59,9 +58,16 @@ class _QrValidationScreenState extends State<QrValidationScreen> {
                 padding: const EdgeInsets.all(18),
                 child: Column(
                   children: [
-                    const Icon(Icons.verified, color: AppColors.success, size: 48),
+                    const Icon(
+                      Icons.verified,
+                      color: AppColors.success,
+                      size: 48,
+                    ),
                     const SizedBox(height: 8),
-                    Text('Permiso válido', style: Theme.of(context).textTheme.titleLarge),
+                    Text(
+                      'Permiso válido',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
                     const SizedBox(height: 4),
                     const Text('Ana López · válido hasta las 12:00 p. m.'),
                   ],

@@ -51,6 +51,26 @@ class AppUser {
   bool get isEventCommissioner => eventRole == 'commissioner';
   bool get isEventGuest => eventRole == 'guest';
 
+  bool get canPublishSchoolContent => isTechnical || isTeacher;
+  bool get canRequestPermission => isTeacher || isEventOrganizer;
+  bool get canCreatePermission => isTechnical;
+  bool get canManageEventRegistrations => isTechnical || isEventOrganizer;
+
+  String get accountLabel {
+    if (isTechnical) return 'Personal técnico';
+    if (isTeacher) return 'Docente';
+    return 'Estudiante';
+  }
+
+  String get eventRoleLabel {
+    return switch (eventRole) {
+      'organizer' => 'Organizador',
+      'commissioner' => 'Comisionado',
+      'guest' => 'Invitado',
+      _ => 'Sin rol de evento',
+    };
+  }
+
   bool hasEventPermission(String permission) {
     return eventPermissions.contains(permission);
   }
