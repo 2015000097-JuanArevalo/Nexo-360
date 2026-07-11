@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/eventos/event_registration_screen.dart';
 import '../../features/eventos/eventos_screen.dart';
 import '../../features/eventos/registration_admin_screen.dart';
+import '../../features/eventos/registration_status_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/login/login_screen.dart';
 import '../../features/permisos/permission_form_screen.dart';
@@ -25,7 +26,9 @@ GoRouter createAppRouter(AppSession session) {
     redirect: (context, state) {
       final path = state.uri.path;
       final publicRoute =
-          path == AppRoutes.login || path == AppRoutes.publicRegistration;
+          path == AppRoutes.login ||
+          path == AppRoutes.publicRegistration ||
+          path.startsWith(AppRoutes.registrationStatus);
 
       if (session.status == SessionStatus.loading) {
         return path == AppRoutes.splash ? null : AppRoutes.splash;
@@ -56,7 +59,19 @@ GoRouter createAppRouter(AppSession session) {
       ),
       GoRoute(
         path: AppRoutes.publicRegistration,
-        builder: (context, state) => const EventRegistrationScreen(),
+        builder: (context, state) => EventRegistrationScreen(
+          eventId: state.uri.queryParameters['eventId'],
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.registrationStatus,
+        builder: (context, state) => const RegistrationStatusScreen(),
+      ),
+      GoRoute(
+        path: '${AppRoutes.registrationStatus}/:registrationId',
+        builder: (context, state) => RegistrationStatusScreen(
+          registrationId: state.pathParameters['registrationId'],
+        ),
       ),
       ShellRoute(
         builder: (context, state, child) => NexoAppShell(
@@ -107,7 +122,8 @@ GoRouter createAppRouter(AppSession session) {
       ),
       GoRoute(
         path: AppRoutes.registrationAdmin,
-        builder: (context, state) => const RegistrationAdminScreen(),
+        builder: (context, state) =>
+            RegistrationAdminScreen(user: session.user!),
       ),
     ],
   );

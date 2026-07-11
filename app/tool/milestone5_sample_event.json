@@ -1,0 +1,18 @@
+{
+  "note": "Reference only. Prefer the in-app 'Crear evento de demostración' button so timestamps use FieldValue.serverTimestamp().",
+  "collection": "events",
+  "documentId": "encuentro-juvenil-nexo-2026",
+  "data": {
+    "name": "Encuentro Juvenil NEXO 2026",
+    "date": "FIRESTORE_TIMESTAMP: 2026-07-18T08:00:00-06:00",
+    "location": "Colegio Don Bosco",
+    "description": "Jornada de formación, convivencia y participación juvenil de NEXO 360.",
+    "capacity": 120,
+    "isPublic": true,
+    "registrationOpen": true,
+    "status": "active",
+    "createdBy": "AUTH_UID_ORGANIZER_OR_TECHNICAL",
+    "createdAt": "FIRESTORE_SERVER_TIMESTAMP",
+    "updatedAt": "FIRESTORE_SERVER_TIMESTAMP"
+  }
+}

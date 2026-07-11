@@ -40,6 +40,12 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 12. `doc/11_Milestone_4_Firebase_and_Demo.md`
     Contiene la configuración de Firebase y el guion para demostrar todos los resultados.
 
+13. `doc/12_Milestone_5_Event_Registration.md`
+    Documenta eventos, inscripción pública, seguimiento, aprobación y check-in.
+
+14. `doc/13_Milestone_5_Firebase_and_Demo.md`
+    Explica la configuración y el checkpoint completo del flujo de eventos.
+
 ## Entrega de Milestone 1
 
 `app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, sesión Firebase, rutas protegidas y componentes reutilizables. Consulta los documentos 06 y 07 para instalar y comprobar Milestone 2.
@@ -47,6 +53,8 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 Milestone 3 conecta `school_announcements` y `school_activities` con Firestore en tiempo real. Consulta los documentos 08 y 09 antes de desplegar las reglas o probar el flujo docente-estudiante.
 
 Milestone 4 conecta `permissions` y `permission_requests`, genera QR reales y permite validarlos por cámara o código manual. Consulta los documentos 10 y 11 antes de desplegar reglas o preparar la presentación.
+
+Milestone 5 conecta `events` y `event_registrations`, reemplaza los datos estáticos por Firestore, permite seguimiento público y habilita aprobación, reserva, rechazo y check-in. Consulta los documentos 12 y 13.
 
 ## Decisiones finales importantes
 

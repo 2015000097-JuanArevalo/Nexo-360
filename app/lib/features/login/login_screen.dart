@@ -213,6 +213,12 @@ class _LoginScreenState extends State<LoginScreen> {
             icon: const Icon(Icons.event_available_outlined),
             label: const Text('Inscripción pública a eventos'),
           ),
+          const SizedBox(height: 8),
+          TextButton.icon(
+            onPressed: () => context.push(AppRoutes.registrationStatus),
+            icon: const Icon(Icons.manage_search_outlined),
+            label: const Text('Consultar estado de inscripción'),
+          ),
         ],
       ),
     );

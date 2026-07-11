@@ -150,6 +150,79 @@ service cloud.firestore {
         && data.updatedAt is timestamp;
     }
 
+    function validEvent(data) {
+      return data.keys().hasAll([
+          'name', 'date', 'location', 'description', 'capacity', 'isPublic',
+          'registrationOpen', 'status', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'name', 'date', 'location', 'description', 'capacity', 'isPublic',
+          'registrationOpen', 'status', 'createdBy', 'createdAt', 'updatedAt'
+        ])
+        && data.name is string
+        && data.name.size() >= 3
+        && data.name.size() <= 160
+        && data.date is timestamp
+        && data.location is string
+        && data.location.size() >= 3
+        && data.location.size() <= 300
+        && data.description is string
+        && data.description.size() >= 5
+        && data.description.size() <= 3000
+        && data.capacity is int
+        && data.capacity > 0
+        && data.capacity <= 10000
+        && data.isPublic is bool
+        && data.registrationOpen is bool
+        && data.status in ['active', 'cancelled', 'completed']
+        && data.createdBy is string
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function validEventRegistration(data) {
+      return data.keys().hasAll([
+          'eventId', 'fullName', 'email', 'phone', 'organization', 'status',
+          'documentUrl', 'createdAt', 'updatedAt', 'checkedIn',
+          'checkedInAt', 'checkedInBy'
+        ])
+        && data.keys().hasOnly([
+          'eventId', 'fullName', 'email', 'phone', 'organization', 'status',
+          'documentUrl', 'createdAt', 'updatedAt', 'checkedIn',
+          'checkedInAt', 'checkedInBy'
+        ])
+        && data.eventId is string
+        && data.fullName is string
+        && data.fullName.size() >= 3
+        && data.fullName.size() <= 120
+        && data.email is string
+        && data.email.size() >= 5
+        && data.email.size() <= 200
+        && data.phone is string
+        && data.phone.size() >= 8
+        && data.phone.size() <= 40
+        && data.organization is string
+        && data.organization.size() >= 2
+        && data.organization.size() <= 200
+        && data.status in ['pending', 'approved', 'reserved', 'rejected']
+        && (data.documentUrl == null
+          || (data.documentUrl is string && data.documentUrl.size() <= 1000))
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && data.checkedIn is bool
+        && (data.checkedInAt == null || data.checkedInAt is timestamp)
+        && (data.checkedInBy == null || data.checkedInBy is string)
+        && (
+          (data.checkedIn == false
+            && data.checkedInAt == null
+            && data.checkedInBy == null)
+          || (data.checkedIn == true
+            && data.status == 'approved'
+            && data.checkedInAt is timestamp
+            && data.checkedInBy is string)
+        );
+    }
+
     match /users/{uid} {
       allow get: if activeUser()
         && (request.auth.uid == uid
@@ -263,40 +336,55 @@ service cloud.firestore {
 
     match /events/{eventId} {
       allow read: if resource.data.isPublic == true || activeUser();
-      allow create, update, delete: if isTechnical() || isOrganizer();
+
+      allow create: if (isTechnical() || isOrganizer())
+        && validEvent(request.resource.data)
+        && request.resource.data.createdBy == request.auth.uid
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.updatedAt == request.time;
+
+      allow update: if (isTechnical() || isOrganizer())
+        && validEvent(request.resource.data)
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.updatedAt == request.time;
+
+      allow delete: if isTechnical() || isOrganizer();
     }
 
     match /event_registrations/{registrationId} {
-      allow create: if request.resource.data.keys().hasAll([
-          'eventId', 'fullName', 'email', 'status', 'createdAt', 'updatedAt'
-        ])
-        && request.resource.data.keys().hasOnly([
-          'eventId', 'fullName', 'email', 'phone', 'organization',
-          'documentUrl', 'status', 'createdAt', 'updatedAt', 'checkedIn'
-        ])
-        && request.resource.data.eventId is string
-        && request.resource.data.fullName is string
-        && request.resource.data.fullName.size() >= 3
-        && request.resource.data.fullName.size() <= 120
-        && request.resource.data.email is string
-        && request.resource.data.email.size() <= 200
+      allow create: if validEventRegistration(request.resource.data)
         && request.resource.data.status == 'pending'
+        && request.resource.data.checkedIn == false
         && request.resource.data.createdAt == request.time
         && request.resource.data.updatedAt == request.time
         && exists(
           /databases/$(database)/documents/events/$(request.resource.data.eventId)
-        );
+        )
+        && get(
+          /databases/$(database)/documents/events/$(request.resource.data.eventId)
+        ).data.isPublic == true
+        && get(
+          /databases/$(database)/documents/events/$(request.resource.data.eventId)
+        ).data.registrationOpen == true
+        && get(
+          /databases/$(database)/documents/events/$(request.resource.data.eventId)
+        ).data.status == 'active';
 
-      allow read: if isTechnical() || isOrganizer();
+      // A random document ID is the public tracking code for this prototype.
+      allow get: if true;
+      allow list: if isTechnical() || isOrganizer();
 
       allow update: if (isTechnical() || isOrganizer())
+        && validEventRegistration(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'status', 'updatedAt', 'checkedIn', 'checkedInAt', 'checkedInBy'
         ])
-        && request.resource.data.status in [
-          'pending', 'approved', 'reserved', 'rejected'
-        ]
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time
+        && (resource.data.checkedIn == false
+          || request.resource.data.checkedIn == true)
+        && (request.resource.data.checkedIn == false
+          || request.resource.data.checkedInBy == request.auth.uid);
 
       allow delete: if isTechnical();
     }

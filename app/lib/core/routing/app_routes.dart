@@ -10,6 +10,11 @@ abstract final class AppRoutes {
   static const pendingPermissionRequests = '/permissions/requests';
   static const events = '/events';
   static const publicRegistration = '/events/register';
+  static const registrationStatus = '/events/status';
   static const registrationAdmin = '/events/admin';
   static const profile = '/profile';
+
+  static String registrationStatusFor(String registrationId) {
+    return '$registrationStatus/$registrationId';
+  }
 }
