@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'core/theme/app_theme.dart';
 import 'features/login/login_screen.dart';
 
 class Nexo360App extends StatelessWidget {
@@ -10,7 +11,7 @@ class Nexo360App extends StatelessWidget {
     return MaterialApp(
       title: 'NEXO 360',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
+      theme: AppTheme.light,
       home: const LoginScreen(),
     );
   }

@@ -1,75 +1,64 @@
 import 'package:flutter/material.dart';
 
 import '../../core/models/app_user.dart';
+import '../../core/widgets/nexo_ui.dart';
+import 'event_registration_screen.dart';
+import 'registration_admin_screen.dart';
 
 class EventosScreen extends StatelessWidget {
   final AppUser user;
 
   const EventosScreen({super.key, required this.user});
 
+  void _open(BuildContext context, Widget screen) {
+    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+  }
+
   @override
   Widget build(BuildContext context) {
-    final options = <String>[];
-
-    if (user.isTechnical || user.isEventOrganizer) {
-      options.addAll([
-        'Crear evento',
-        'Editar evento',
-        'Eliminar evento',
-        'Publicar aviso de evento',
-        'Revisar inscripciones',
-        'Gestionar inventario',
-        'Gestionar ubicaciones',
-        'Asignar comisionados',
-      ]);
-    } else if (user.isEventCommissioner) {
-      if (user.hasEventPermission('view_event_announcements')) {
-        options.add('Ver avisos de evento');
-      }
-      if (user.hasEventPermission('view_assigned_event')) {
-        options.add('Ver evento asignado');
-      }
-      if (user.hasEventPermission('check_in')) {
-        options.add('Realizar check-in');
-      }
-      if (user.hasEventPermission('request_inventory')) {
-        options.add('Solicitar inventario');
-      }
-      if (user.hasEventPermission('view_inventory')) {
-        options.add('Ver inventario asignado');
-      }
-      if (user.hasEventPermission('view_map')) {
-        options.add('Ver mapa/croquis');
-      }
-      if (user.hasEventPermission('create_event_message')) {
-        options.add('Crear mensaje de evento');
-      }
-    } else {
-      options.addAll([
-        'Ver información del evento',
-        'Enviar formulario de inscripción',
-      ]);
-    }
-
-    return Scaffold(
-      appBar: AppBar(title: const Text('Eventos')),
-      body: ListView(
-        padding: const EdgeInsets.all(24),
-        children: [
-          Text('Usuario: ${user.displayName}'),
-          Text('Tipo de cuenta: ${user.accountType}'),
-          Text('Rol en eventos: ${user.eventRole}'),
-          const SizedBox(height: 24),
-          const Text(
-            'Opciones disponibles:',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+    final canAdmin = user.isTechnical || user.isEventOrganizer;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const PageHeading(
+          title: 'Eventos',
+          description: 'Información, inscripciones y administración del evento.',
+        ),
+        const SizedBox(height: 20),
+        NexoModuleCard(
+          icon: Icons.event_available_outlined,
+          title: 'Evento activo',
+          description: 'Encuentro Juvenil NEXO 2026 · 18 de julio.',
+          badge: 'Inscripción abierta',
+          onTap: () => _open(context, const EventRegistrationScreen()),
+        ),
+        if (canAdmin) ...[
           const SizedBox(height: 12),
-          ...options.map(
-            (option) => Card(child: ListTile(title: Text(option))),
+          NexoModuleCard(
+            icon: Icons.people_alt_outlined,
+            title: 'Administrar inscripciones',
+            description: 'Revisa, aprueba, reserva o rechaza participantes.',
+            badge: '8 pendientes',
+            onTap: () => _open(context, const RegistrationAdminScreen()),
           ),
         ],
-      ),
+        if (user.isEventCommissioner) ...[
+          const SizedBox(height: 12),
+          const NexoModuleCard(
+            icon: Icons.task_alt_outlined,
+            title: 'Mi comisión',
+            description: 'Acciones limitadas por eventPermissions.',
+            badge: 'Próximamente',
+          ),
+        ],
+        const SizedBox(height: 12),
+        const NexoModuleCard(
+          icon: Icons.map_outlined,
+          title: 'Mapa e información',
+          description: 'Vista preliminar del croquis y puntos del evento.',
+          badge: 'Próximamente',
+        ),
+      ],
     );
   }
 }

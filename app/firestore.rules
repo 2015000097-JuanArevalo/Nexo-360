@@ -1,0 +1,77 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function activeUser() {
+      return signedIn() && profile().status == 'active';
+    }
+
+    function isTechnical() {
+      return activeUser() && profile().accountType == 'technical';
+    }
+
+    function isTeacher() {
+      return activeUser() && profile().accountType == 'teacher';
+    }
+
+    function isOrganizer() {
+      return activeUser() && profile().eventRole == 'organizer';
+    }
+
+    match /users/{uid} {
+      allow read: if activeUser() && (request.auth.uid == uid || isTechnical());
+      allow create, update, delete: if isTechnical();
+    }
+
+    match /school_announcements/{documentId} {
+      allow read: if activeUser();
+      allow create, update, delete: if isTechnical() || isTeacher();
+    }
+
+    match /school_activities/{documentId} {
+      allow read: if activeUser();
+      allow create, update, delete: if isTechnical() || isTeacher();
+    }
+
+    match /permissions/{permissionId} {
+      allow read: if activeUser();
+      allow create, update, delete: if isTechnical();
+    }
+
+    match /permission_requests/{requestId} {
+      allow create: if activeUser()
+        && (isTeacher() || isOrganizer())
+        && request.resource.data.requestedBy == request.auth.uid
+        && request.resource.data.status == 'pending';
+      allow read: if isTechnical()
+        || (activeUser() && resource.data.requestedBy == request.auth.uid);
+      allow update, delete: if isTechnical();
+    }
+
+    match /events/{eventId} {
+      allow read: if true;
+      allow create, update, delete: if isTechnical() || isOrganizer();
+    }
+
+    match /event_registrations/{registrationId} {
+      allow create: if request.resource.data.status == 'pending'
+        && request.resource.data.fullName is string
+        && request.resource.data.email is string
+        && request.resource.data.eventId is string;
+      allow read, update: if isTechnical() || isOrganizer();
+      allow delete: if isTechnical();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

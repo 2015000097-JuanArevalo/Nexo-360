@@ -1,0 +1,99 @@
+import 'package:flutter/material.dart';
+
+import '../../core/models/app_user.dart';
+import '../../core/widgets/nexo_ui.dart';
+
+class PermissionFormScreen extends StatefulWidget {
+  final AppUser user;
+
+  const PermissionFormScreen({super.key, required this.user});
+
+  @override
+  State<PermissionFormScreen> createState() => _PermissionFormScreenState();
+}
+
+class _PermissionFormScreenState extends State<PermissionFormScreen> {
+  final _formKey = GlobalKey<FormState>();
+  String? _student;
+
+  @override
+  Widget build(BuildContext context) {
+    final direct = widget.user.isTechnical;
+    return PrototypeScreen(
+      title: direct ? 'Crear permiso' : 'Solicitar permiso',
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PageHeading(
+              title: direct ? 'Nuevo permiso estudiantil' : 'Nueva solicitud',
+              description: direct
+                  ? 'El permiso quedará activo después de guardarlo.'
+                  : 'Un técnico deberá aprobar la solicitud.',
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              initialValue: _student,
+              decoration: const InputDecoration(labelText: 'Estudiante'),
+              items: const [
+                DropdownMenuItem(value: 's1', child: Text('Ana López · 10A')),
+                DropdownMenuItem(
+                  value: 's2',
+                  child: Text('Carlos Méndez · 10A'),
+                ),
+              ],
+              onChanged: (value) => setState(() => _student = value),
+              validator: (value) =>
+                  value == null ? 'Selecciona un estudiante.' : null,
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Motivo'),
+              maxLines: 2,
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              decoration: InputDecoration(labelText: 'Destino o actividad'),
+            ),
+            const SizedBox(height: 14),
+            const Row(
+              children: [
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(labelText: 'Inicio'),
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: TextField(
+                    decoration: InputDecoration(labelText: 'Vencimiento'),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            FilledButton.icon(
+              onPressed: () {
+                if (!_formKey.currentState!.validate()) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      direct
+                          ? 'Diseño confirmado: el permiso se guardará en permissions.'
+                          : 'Diseño confirmado: se guardará en permission_requests.',
+                    ),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.check),
+              label: Text(direct ? 'Crear permiso' : 'Enviar solicitud'),
+            ),
+            const SizedBox(height: 14),
+            const PrototypeNotice(),
+          ],
+        ),
+      ),
+    );
+  }
+}

@@ -13,8 +13,18 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 3. `03_Instrucciones_Cambios_Firebase.md`  
    Explica paso a paso qué debes modificar en Firebase tomando como base la versión que ya habías hecho.
 
-4. `firestore.rules`  
+4. `app/firestore.rules`
    Reglas finales de Firestore para esta versión.
+
+5. `doc/04_Milestone_1_Design_Freeze.md`
+   Congela pantallas, navegación, acceso por rol y guía visual.
+
+6. `doc/05_Prototype_Setup_and_Firebase.md`
+   Explica cómo ejecutar Flutter y configurar las cuentas, reglas e índices de Firebase.
+
+## Entrega de Milestone 1
+
+`app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, formularios de prototipo y componentes reutilizables. Consulta `doc/04_Milestone_1_Design_Freeze.md` antes de conectar los flujos a Firestore.
 
 ## Decisiones finales importantes
 
