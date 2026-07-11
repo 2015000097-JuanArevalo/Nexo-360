@@ -1,0 +1,38 @@
+{
+  "note": "Reference only. Use the in-app 'Crear datos de demostración' button so createdAt is written with FieldValue.serverTimestamp().",
+  "school_announcements": [
+    {
+      "documentId": "announcement-demo-01",
+      "title": "Jornada deportiva Don Bosco",
+      "message": "Asistir el viernes con uniforme deportivo y agua pura.",
+      "course": "General"
+    },
+    {
+      "documentId": "announcement-demo-02",
+      "title": "Reunión de padres de familia",
+      "message": "La reunión se realizará el jueves a las 4:00 p. m.",
+      "course": "10A"
+    },
+    {
+      "documentId": "announcement-demo-03",
+      "title": "Movimiento Juventud",
+      "message": "Las inscripciones para el encuentro juvenil están abiertas.",
+      "course": "General"
+    }
+  ],
+  "school_activity_fields": {
+    "required": [
+      "title",
+      "description",
+      "course",
+      "dueDate",
+      "teacherId",
+      "teacherName",
+      "createdAt",
+      "attachmentUrl",
+      "classId",
+      "status"
+    ],
+    "status": "published"
+  }
+}

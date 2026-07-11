@@ -34,11 +34,19 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 10. `doc/09_Milestone_3_Firebase_Setup.md`
     Explica las reglas, datos de demostración y prueba completa del Portal Escolar.
 
+11. `doc/10_Milestone_4_QR_Permissions.md`
+    Documenta el flujo funcional de permisos, QR, validación y acceso por rol.
+
+12. `doc/11_Milestone_4_Firebase_and_Demo.md`
+    Contiene la configuración de Firebase y el guion para demostrar todos los resultados.
+
 ## Entrega de Milestone 1
 
 `app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, sesión Firebase, rutas protegidas y componentes reutilizables. Consulta los documentos 06 y 07 para instalar y comprobar Milestone 2.
 
 Milestone 3 conecta `school_announcements` y `school_activities` con Firestore en tiempo real. Consulta los documentos 08 y 09 antes de desplegar las reglas o probar el flujo docente-estudiante.
+
+Milestone 4 conecta `permissions` y `permission_requests`, genera QR reales y permite validarlos por cámara o código manual. Consulta los documentos 10 y 11 antes de desplegar reglas o preparar la presentación.
 
 ## Decisiones finales importantes
 
@@ -49,5 +57,5 @@ Milestone 3 conecta `school_announcements` y `school_activities` con Firestore e
 - Docentes y organizadores solo envían solicitudes de permisos.
 - Los permisos solo se asignan a estudiantes.
 - Los docentes no tienen QR de permiso.
-- Estudiantes y docentes pueden leer un QR para consultar si un estudiante tiene permiso.
+- El personal técnico valida los QR; el estudiante consulta y presenta únicamente los suyos.
 - Ya no existe una opción llamada `validate_qr` dentro de Eventos.
