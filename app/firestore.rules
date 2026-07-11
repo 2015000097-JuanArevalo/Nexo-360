@@ -26,6 +26,76 @@ service cloud.firestore {
       return activeUser() && profile().eventRole == 'organizer';
     }
 
+    function validAnnouncement(data) {
+      return data.keys().hasAll([
+          'title',
+          'message',
+          'course',
+          'authorId',
+          'authorName',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'title',
+          'message',
+          'course',
+          'authorId',
+          'authorName',
+          'createdAt'
+        ])
+        && data.title is string
+        && data.title.size() >= 3
+        && data.title.size() <= 120
+        && data.message is string
+        && data.message.size() >= 3
+        && data.message.size() <= 1000
+        && data.course is string
+        && data.authorId is string
+        && data.authorName is string
+        && data.createdAt is timestamp;
+    }
+
+    function validActivity(data) {
+      return data.keys().hasAll([
+          'title',
+          'description',
+          'course',
+          'dueDate',
+          'teacherId',
+          'teacherName',
+          'createdAt',
+          'attachmentUrl',
+          'classId',
+          'status'
+        ])
+        && data.keys().hasOnly([
+          'title',
+          'description',
+          'course',
+          'dueDate',
+          'teacherId',
+          'teacherName',
+          'createdAt',
+          'attachmentUrl',
+          'classId',
+          'status'
+        ])
+        && data.title is string
+        && data.title.size() >= 3
+        && data.title.size() <= 120
+        && data.description is string
+        && data.description.size() >= 5
+        && data.description.size() <= 3000
+        && data.course is string
+        && data.dueDate is timestamp
+        && data.teacherId is string
+        && data.teacherName is string
+        && data.createdAt is timestamp
+        && (data.attachmentUrl == null || data.attachmentUrl is string)
+        && (data.classId == null || data.classId is string)
+        && data.status == 'published';
+    }
+
     match /users/{uid} {
       allow read: if activeUser() && (request.auth.uid == uid || isTechnical());
       allow create, update, delete: if isTechnical();
@@ -33,12 +103,36 @@ service cloud.firestore {
 
     match /school_announcements/{documentId} {
       allow read: if activeUser();
-      allow create, update, delete: if isTechnical() || isTeacher();
+      allow create: if (isTechnical() || isTeacher())
+        && validAnnouncement(request.resource.data)
+        && request.resource.data.authorId == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if (isTechnical()
+          || (isTeacher() && resource.data.authorId == request.auth.uid))
+        && validAnnouncement(request.resource.data)
+        && request.resource.data.authorId == resource.data.authorId
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isTechnical()
+        || (isTeacher() && resource.data.authorId == request.auth.uid);
     }
 
     match /school_activities/{documentId} {
       allow read: if activeUser();
-      allow create, update, delete: if isTechnical() || isTeacher();
+      allow create: if (isTechnical() || isTeacher())
+        && validActivity(request.resource.data)
+        && request.resource.data.teacherId == request.auth.uid
+        && request.resource.data.createdAt == request.time;
+
+      allow update: if (isTechnical()
+          || (isTeacher() && resource.data.teacherId == request.auth.uid))
+        && validActivity(request.resource.data)
+        && request.resource.data.teacherId == resource.data.teacherId
+        && request.resource.data.createdAt == resource.data.createdAt;
+
+      allow delete: if isTechnical()
+        || (isTeacher() && resource.data.teacherId == request.auth.uid);
     }
 
     match /permissions/{permissionId} {

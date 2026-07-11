@@ -67,6 +67,10 @@ class HomeScreen extends StatelessWidget {
           description: _roleDescription(user),
         ),
         const SizedBox(height: 18),
+        if (user.isStudent) ...[
+          const _AcademicPreview(),
+          const SizedBox(height: 18),
+        ],
         LayoutBuilder(
           builder: (context, constraints) {
             final columns = constraints.maxWidth >= 760 ? 2 : 1;
@@ -188,6 +192,100 @@ class HomeScreen extends StatelessWidget {
       return 'Consulta estudiantil y herramientas de organización de eventos.';
     }
     return 'Actividades escolares, permiso personal e información de eventos.';
+  }
+}
+
+class _AcademicPreview extends StatelessWidget {
+  const _AcademicPreview();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(18),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'Resumen académico',
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              'Datos de demostración · gestión detallada próximamente',
+              style: TextStyle(color: AppColors.muted),
+            ),
+            const SizedBox(height: 16),
+            const Row(
+              children: [
+                Expanded(
+                  child: _AcademicMetric(
+                    icon: Icons.grade_outlined,
+                    label: 'Promedio actual',
+                    value: '87.5',
+                    color: AppColors.violet,
+                  ),
+                ),
+                SizedBox(width: 12),
+                Expanded(
+                  child: _AcademicMetric(
+                    icon: Icons.fact_check_outlined,
+                    label: 'Asistencia',
+                    value: '94%',
+                    color: AppColors.success,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _AcademicMetric extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  const _AcademicMetric({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: .09),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: color),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  value,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(color: color),
+                ),
+                Text(label, style: const TextStyle(color: AppColors.muted)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 
