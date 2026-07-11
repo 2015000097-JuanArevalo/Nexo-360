@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/models/app_user.dart';
 import '../../core/routing/app_routes.dart';
+import '../../core/services/permission_service.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/nexo_ui.dart';
 
@@ -48,7 +49,7 @@ class PermisosScreen extends StatelessWidget {
           ),
           const SizedBox(height: 12),
         ],
-        if (user.isTechnical) ...[
+        if (user.isTechnical || user.isTeacher) ...[
           NexoModuleCard(
             icon: Icons.qr_code_scanner,
             title: 'Validar QR',
@@ -57,16 +58,45 @@ class PermisosScreen extends StatelessWidget {
             onTap: () => context.push(AppRoutes.validatePermission),
           ),
           const SizedBox(height: 12),
-          const NexoModuleCard(
-            icon: Icons.approval_outlined,
-            title: 'Solicitudes pendientes',
-            description: 'Bandeja técnica de aprobación y denegación.',
-            accentColor: AppColors.youthCoral,
-            badge: '3 pendientes',
-            badgeTone: StatusTone.pending,
-          ),
         ],
+        if (user.isTechnical) ...[const _PendingRequestsCard()],
       ],
+    );
+  }
+}
+
+class _PendingRequestsCard extends StatefulWidget {
+  const _PendingRequestsCard();
+
+  @override
+  State<_PendingRequestsCard> createState() => _PendingRequestsCardState();
+}
+
+class _PendingRequestsCardState extends State<_PendingRequestsCard> {
+  late final PermissionService _service;
+
+  @override
+  void initState() {
+    super.initState();
+    _service = PermissionService();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder(
+      stream: _service.watchPendingPermissionRequests(),
+      builder: (context, snapshot) {
+        final count = snapshot.data?.length;
+        return NexoModuleCard(
+          icon: Icons.approval_outlined,
+          title: 'Solicitudes pendientes',
+          description: 'Bandeja técnica de aprobación y denegación.',
+          accentColor: AppColors.youthCoral,
+          badge: count == null ? 'Cargando' : '$count pendientes',
+          badgeTone: count == 0 ? StatusTone.success : StatusTone.pending,
+          onTap: () => context.push(AppRoutes.pendingPermissionRequests),
+        );
+      },
     );
   }
 }

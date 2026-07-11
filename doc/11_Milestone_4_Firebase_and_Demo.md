@@ -109,9 +109,17 @@ Debe mostrarse **NO ENCONTRADO**.
 
 La consola administrativa de Firebase no depende de las reglas del cliente. En la app, una actualización equivalente está reservada al técnico y debe usar un timestamp del servidor.
 
-## 6. Formulario docente
+## 6. Solicitud y aprobación docente
 
-Al guardar como docente no se crea un permiso activo: se crea `permission_requests/{requestId}` con estado `pending`. Esto es intencional y coincide con las reglas actuales. Para la demostración del QR use la cuenta técnica para crear el permiso real; la bandeja de aprobación completa pertenece a un milestone posterior.
+Al guardar como docente se crea `permission_requests/{requestId}` con estado `pending`. Luego:
+
+1. Inicie sesión como técnico.
+2. Abra Permisos → Solicitudes pendientes.
+3. El contador debe mostrar la cantidad real recibida desde Firestore.
+4. Pulse Aprobar para crear el permiso y actualizar la solicitud en una sola operación atómica.
+5. Pulse Denegar cuando no deba crearse un permiso.
+
+Docentes y técnicos también pueden abrir Validar QR. La creación directa de documentos `permissions` continúa reservada al técnico.
 
 ## 7. Solución rápida de errores
 

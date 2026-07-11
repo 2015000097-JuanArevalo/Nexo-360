@@ -142,7 +142,7 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    if (user.isTechnical) {
+    if (user.isTechnical || user.isTeacher) {
       items.add(
         const _DashboardItem(
           icon: Icons.qr_code_scanner,
@@ -150,6 +150,20 @@ class HomeScreen extends StatelessWidget {
           description: 'Verifica un permiso por cámara o código manual.',
           path: AppRoutes.validatePermission,
           color: AppColors.primary,
+        ),
+      );
+    }
+
+    if (user.isTechnical) {
+      items.add(
+        const _DashboardItem(
+          icon: Icons.approval_outlined,
+          title: 'Solicitudes pendientes',
+          description: 'Aprueba o deniega solicitudes de permisos.',
+          path: AppRoutes.pendingPermissionRequests,
+          color: AppColors.youthCoral,
+          badge: 'Revisión técnica',
+          badgeTone: StatusTone.pending,
         ),
       );
     }

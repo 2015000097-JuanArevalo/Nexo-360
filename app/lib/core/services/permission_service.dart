@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/app_user.dart';
 import '../models/permission_record.dart';
+import '../models/permission_request.dart';
 import '../utils/permission_qr_payload.dart';
 import 'permission_validator.dart';
 
@@ -42,6 +43,20 @@ class PermissionService {
               .toList();
           permissions.sort((a, b) => b.validUntil.compareTo(a.validUntil));
           return permissions;
+        });
+  }
+
+  Stream<List<PermissionRequest>> watchPendingPermissionRequests() {
+    return _firestore
+        .collection('permission_requests')
+        .where('status', isEqualTo: 'pending')
+        .snapshots()
+        .map((snapshot) {
+          final requests = snapshot.docs
+              .map(PermissionRequest.fromDocument)
+              .toList();
+          requests.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          return requests;
         });
   }
 
@@ -117,6 +132,66 @@ class PermissionService {
       'reviewedBy': null,
       'reviewComment': null,
       'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  Future<String> approvePermissionRequest({
+    required PermissionRequest request,
+    required AppUser reviewer,
+  }) async {
+    if (!reviewer.isTechnical) {
+      throw StateError('Solo el personal técnico aprueba solicitudes.');
+    }
+    if (request.status != 'pending') {
+      throw StateError('La solicitud ya fue procesada.');
+    }
+
+    final requestReference = _firestore
+        .collection('permission_requests')
+        .doc(request.id);
+    final permissionReference = _firestore.collection('permissions').doc();
+    final token = _generateSecureToken();
+    final batch = _firestore.batch();
+
+    batch.set(permissionReference, {
+      'studentId': request.studentId,
+      'studentName': request.studentName,
+      'classId': request.classId,
+      'createdBy': reviewer.uid,
+      'reason': request.reason,
+      'destination': request.destination,
+      'validFrom': Timestamp.fromDate(request.validFrom),
+      'validUntil': Timestamp.fromDate(request.validUntil),
+      'status': 'active',
+      'qrToken': token,
+      'createdAt': FieldValue.serverTimestamp(),
+      'updatedAt': FieldValue.serverTimestamp(),
+      'createdFromRequestId': request.id,
+    });
+    batch.update(requestReference, {
+      'status': 'approved',
+      'targetPermissionId': permissionReference.id,
+      'reviewedBy': reviewer.uid,
+      'reviewComment': 'Aprobado por personal técnico.',
+      'updatedAt': FieldValue.serverTimestamp(),
+    });
+    await batch.commit();
+    return permissionReference.id;
+  }
+
+  Future<void> denyPermissionRequest({
+    required PermissionRequest request,
+    required AppUser reviewer,
+  }) async {
+    if (!reviewer.isTechnical) {
+      throw StateError('Solo el personal técnico deniega solicitudes.');
+    }
+    await _firestore.collection('permission_requests').doc(request.id).update({
+      'status': 'denied',
+      'targetPermissionId': null,
+      'reviewedBy': reviewer.uid,
+      'reviewComment': 'Denegado por personal técnico.',
       'updatedAt': FieldValue.serverTimestamp(),
     });
   }

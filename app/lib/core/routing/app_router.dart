@@ -6,6 +6,7 @@ import '../../features/eventos/registration_admin_screen.dart';
 import '../../features/home/home_screen.dart';
 import '../../features/login/login_screen.dart';
 import '../../features/permisos/permission_form_screen.dart';
+import '../../features/permisos/pending_permission_requests_screen.dart';
 import '../../features/permisos/permisos_screen.dart';
 import '../../features/permisos/qr_validation_screen.dart';
 import '../../features/permisos/student_qr_screen.dart';
@@ -100,6 +101,11 @@ GoRouter createAppRouter(AppSession session) {
         builder: (context, state) => const QrValidationScreen(),
       ),
       GoRoute(
+        path: AppRoutes.pendingPermissionRequests,
+        builder: (context, state) =>
+            PendingPermissionRequestsScreen(user: session.user!),
+      ),
+      GoRoute(
         path: AppRoutes.registrationAdmin,
         builder: (context, state) => const RegistrationAdminScreen(),
       ),
@@ -115,7 +121,8 @@ abstract final class AppRouteAccess {
       AppRoutes.createPermission =>
         user.isTechnical || user.isTeacher || user.isEventOrganizer,
       AppRoutes.studentPermission => user.isStudent,
-      AppRoutes.validatePermission => user.isTechnical,
+      AppRoutes.validatePermission => user.isTechnical || user.isTeacher,
+      AppRoutes.pendingPermissionRequests => user.isTechnical,
       AppRoutes.registrationAdmin => user.canManageEventRegistrations,
       _ => true,
     };

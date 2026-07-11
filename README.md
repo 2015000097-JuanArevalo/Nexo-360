@@ -57,5 +57,6 @@ Milestone 4 conecta `permissions` y `permission_requests`, genera QR reales y pe
 - Docentes y organizadores solo envían solicitudes de permisos.
 - Los permisos solo se asignan a estudiantes.
 - Los docentes no tienen QR de permiso.
-- El personal técnico valida los QR; el estudiante consulta y presenta únicamente los suyos.
+- Docentes y personal técnico validan los QR; el estudiante consulta y presenta únicamente los suyos.
+- El personal técnico aprueba o deniega solicitudes pendientes desde una bandeja en tiempo real.
 - Ya no existe una opción llamada `validate_qr` dentro de Eventos.

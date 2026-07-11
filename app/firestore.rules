@@ -198,6 +198,7 @@ service cloud.firestore {
     match /permissions/{permissionId} {
       // QR validation retrieves one permission by its document ID.
       allow get: if isTechnical()
+        || isTeacher()
         || (isStudent() && resource.data.studentId == request.auth.uid);
 
       // Student queries must filter studentId == request.auth.uid.
@@ -239,13 +240,23 @@ service cloud.firestore {
         || (activeUser() && resource.data.requestedBy == request.auth.uid);
 
       allow update: if isTechnical()
+        && resource.data.status == 'pending'
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'status', 'targetPermissionId', 'reviewedBy',
           'reviewComment', 'updatedAt'
         ])
         && request.resource.data.status in ['approved', 'denied']
         && request.resource.data.reviewedBy == request.auth.uid
-        && request.resource.data.updatedAt == request.time;
+        && request.resource.data.updatedAt == request.time
+        && (
+          (request.resource.data.status == 'approved'
+            && request.resource.data.targetPermissionId is string
+            && existsAfter(
+              /databases/$(database)/documents/permissions/$(request.resource.data.targetPermissionId)
+            ))
+          || (request.resource.data.status == 'denied'
+            && request.resource.data.targetPermissionId == null)
+        );
 
       allow delete: if isTechnical();
     }
