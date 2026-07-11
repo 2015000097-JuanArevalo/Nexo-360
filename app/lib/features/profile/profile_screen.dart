@@ -88,8 +88,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 subtitle: const Text(
                   'Administrada mediante Firebase Authentication.',
                 ),
-                trailing: const Icon(Icons.chevron_right),
-                onTap: () {},
               ),
             ],
           ),

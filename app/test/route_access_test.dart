@@ -28,6 +28,10 @@ void main() {
       );
       expect(AppRouteAccess.canOpen(AppRoutes.createEvent, staff), isTrue);
       expect(
+        AppRouteAccess.canOpen(AppRoutes.presentationSetup, staff),
+        isTrue,
+      );
+      expect(
         AppRouteAccess.canOpen(AppRoutes.studentPermission, staff),
         isFalse,
       );
@@ -75,6 +79,10 @@ void main() {
 
       expect(AppRouteAccess.canOpen(AppRoutes.createEvent, teacher), isFalse);
       expect(AppRouteAccess.canOpen(AppRoutes.createEvent, student), isFalse);
+      expect(
+        AppRouteAccess.canOpen(AppRoutes.presentationSetup, teacher),
+        isFalse,
+      );
     });
 
     test('inactive organizer cannot create events', () {

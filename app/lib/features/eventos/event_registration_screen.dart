@@ -119,6 +119,7 @@ class _EventRegistrationScreenState extends State<EventRegistrationScreen> {
   Widget build(BuildContext context) {
     return PrototypeScreen(
       title: 'Inscripción pública',
+      showDashboardAction: false,
       child: FutureBuilder<EventRecord?>(
         future: _eventFuture,
         builder: (context, snapshot) {

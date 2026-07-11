@@ -13,6 +13,7 @@ abstract final class AppRoutes {
   static const publicRegistration = '/events/register';
   static const registrationStatus = '/events/status';
   static const registrationAdmin = '/events/admin';
+  static const presentationSetup = '/presentation/setup';
   static const profile = '/profile';
 
   static String registrationStatusFor(String registrationId) {

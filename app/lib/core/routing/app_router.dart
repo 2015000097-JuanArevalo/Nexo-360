@@ -14,6 +14,7 @@ import '../../features/permisos/qr_validation_screen.dart';
 import '../../features/permisos/student_qr_screen.dart';
 import '../../features/portal_escolar/assignments_screen.dart';
 import '../../features/profile/profile_screen.dart';
+import '../../features/profile/presentation_setup_screen.dart';
 import '../auth/app_session.dart';
 import '../models/app_user.dart';
 import '../widgets/nexo_app_shell.dart';
@@ -130,6 +131,11 @@ GoRouter createAppRouter(AppSession session) {
         builder: (context, state) =>
             RegistrationAdminScreen(user: session.user!),
       ),
+      GoRoute(
+        path: AppRoutes.presentationSetup,
+        builder: (context, state) =>
+            PresentationSetupScreen(user: session.user!),
+      ),
     ],
   );
 }
@@ -146,6 +152,7 @@ abstract final class AppRouteAccess {
       AppRoutes.pendingPermissionRequests => user.isTechnical,
       AppRoutes.createEvent => user.canCreateEvents,
       AppRoutes.registrationAdmin => user.canManageEventRegistrations,
+      AppRoutes.presentationSetup => user.isTechnical,
       _ => true,
     };
   }

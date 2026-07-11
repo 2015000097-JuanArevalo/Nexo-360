@@ -51,6 +51,7 @@ class _RegistrationStatusScreenState extends State<RegistrationStatusScreen> {
     final registrationId = widget.registrationId?.trim();
     return PrototypeScreen(
       title: 'Estado de inscripción',
+      showDashboardAction: false,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [

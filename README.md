@@ -49,6 +49,15 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 15. `doc/14_Event_Creation_and_Roles.md`
     Documenta la creación completa de eventos y la matriz teacher/student por rol de evento.
 
+16. `doc/15_Milestone_6_Integration_and_Testing.md`
+    Contiene la integración final y la matriz manual obligatoria.
+
+17. `doc/16_Milestone_6_Issue_Log.md`
+    Clasifica problemas Critical, Medium y Minor.
+
+18. `doc/17_Milestone_6_Presentation_Runbook.md`
+    Define credenciales privadas, capturas, builds, video y ensayos.
+
 ## Entrega de Milestone 1
 
 `app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, sesión Firebase, rutas protegidas y componentes reutilizables. Consulta los documentos 06 y 07 para instalar y comprobar Milestone 2.
@@ -58,6 +67,8 @@ Milestone 3 conecta `school_announcements` y `school_activities` con Firestore e
 Milestone 4 conecta `permissions` y `permission_requests`, genera QR reales y permite validarlos por cámara o código manual. Consulta los documentos 10 y 11 antes de desplegar reglas o preparar la presentación.
 
 Milestone 5 conecta `events` y `event_registrations`, reemplaza los datos estáticos por Firestore, permite seguimiento público y habilita aprobación, reserva, rechazo y check-in. Consulta los documentos 12 y 13.
+
+Milestone 6 integra resúmenes en tiempo real, navegación segura al dashboard, preparación técnica de datos demo, clasificación de módulos prototipo, pruebas manuales y el runbook de build/presentación. Consulta los documentos 15, 16 y 17.
 
 ## Decisiones finales importantes
 

@@ -39,14 +39,14 @@ class PortalEscolarScreen extends StatelessWidget {
           icon: Icons.calendar_month_outlined,
           title: 'Horarios',
           description: 'Vista preliminar del horario escolar.',
-          badge: 'Próximamente',
+          badge: 'Prototipo',
         ),
         const SizedBox(height: 12),
         const NexoModuleCard(
           icon: Icons.fact_check_outlined,
           title: 'Asistencia y notas',
           description: 'Resumen visual incluido fuera del flujo crítico.',
-          badge: 'Próximamente',
+          badge: 'Prototipo',
         ),
       ],
     );

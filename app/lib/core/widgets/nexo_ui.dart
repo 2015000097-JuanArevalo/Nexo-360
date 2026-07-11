@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
+import '../routing/app_routes.dart';
 import '../theme/app_colors.dart';
 
 enum StatusTone { info, success, pending, danger }
@@ -444,13 +446,30 @@ class PrototypeNotice extends StatelessWidget {
 class PrototypeScreen extends StatelessWidget {
   final String title;
   final Widget child;
+  final bool showDashboardAction;
 
-  const PrototypeScreen({super.key, required this.title, required this.child});
+  const PrototypeScreen({
+    super.key,
+    required this.title,
+    required this.child,
+    this.showDashboardAction = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(title)),
+      appBar: AppBar(
+        title: Text(title),
+        actions: showDashboardAction
+            ? [
+                IconButton(
+                  onPressed: () => context.go(AppRoutes.dashboard),
+                  tooltip: 'Volver al dashboard',
+                  icon: const Icon(Icons.dashboard_outlined),
+                ),
+              ]
+            : null,
+      ),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),

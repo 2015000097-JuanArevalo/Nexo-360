@@ -131,9 +131,9 @@ class _EventosScreenState extends State<EventosScreen> {
           const NexoModuleCard(
             icon: Icons.task_alt_outlined,
             title: 'Mi comisión',
-            description: 'Acciones limitadas según eventPermissions.',
+            description: 'Vista secundaria pendiente de implementación.',
             accentColor: AppColors.cyan,
-            badge: 'Comisionado',
+            badge: 'Prototipo',
           ),
         ],
         const SizedBox(height: 12),
@@ -142,7 +142,7 @@ class _EventosScreenState extends State<EventosScreen> {
           title: 'Mapa e información',
           description: 'Vista preliminar del croquis y puntos del evento.',
           accentColor: AppColors.royalBlue,
-          badge: 'Próximamente',
+          badge: 'Prototipo',
         ),
       ],
     );
