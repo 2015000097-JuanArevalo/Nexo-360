@@ -223,13 +223,13 @@ class _AssignmentsScreenState extends State<AssignmentsScreen> {
                   padding: const EdgeInsets.only(bottom: 12),
                   child: _AssignmentCard(
                     assignment: assignment,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) =>
-                            AssignmentDetailScreen(assignment: assignment),
-                      ),
-                    ),
+                    onTap: () =>
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                AssignmentDetailScreen(assignment: assignment),
+                          ),
+                        ),
                   ),
                 ),
               )

@@ -28,9 +28,17 @@ Este paquete contiene la versión final corregida de la reestructuración de NEX
 8. `doc/07_Milestone_2_Firebase_Configuration.md`
    Contiene la configuración exacta de las cuentas demo y las verificaciones de Firebase.
 
+9. `doc/08_Milestone_3_School_Portal.md`
+   Documenta el flujo funcional de avisos y actividades compartido por docentes y estudiantes.
+
+10. `doc/09_Milestone_3_Firebase_Setup.md`
+    Explica las reglas, datos de demostración y prueba completa del Portal Escolar.
+
 ## Entrega de Milestone 1
 
 `app/lib` incluye una interfaz responsive con navegación inferior en móvil y lateral en pantallas amplias, dashboard por rol, sesión Firebase, rutas protegidas y componentes reutilizables. Consulta los documentos 06 y 07 para instalar y comprobar Milestone 2.
+
+Milestone 3 conecta `school_announcements` y `school_activities` con Firestore en tiempo real. Consulta los documentos 08 y 09 antes de desplegar las reglas o probar el flujo docente-estudiante.
 
 ## Decisiones finales importantes
 

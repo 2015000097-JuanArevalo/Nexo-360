@@ -10,7 +10,10 @@ class PortalEscolarScreen extends StatelessWidget {
   const PortalEscolarScreen({super.key, required this.user});
 
   void _open(BuildContext context, Widget screen) {
-    Navigator.push(context, MaterialPageRoute(builder: (_) => screen));
+    Navigator.of(
+      context,
+      rootNavigator: true,
+    ).push(MaterialPageRoute(builder: (_) => screen));
   }
 
   @override
