@@ -33,3 +33,8 @@ Thumbs.db
 key.properties
 NEXO-360-Android.apk
 NEXO-360-Windows.zip
+
+# Old or duplicated Flutter projects
+/app_backup_duplicado*/
+/app_mezclada_*/
+/app/app/
