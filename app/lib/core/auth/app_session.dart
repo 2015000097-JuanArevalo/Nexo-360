@@ -5,87 +5,63 @@ import 'package:flutter/foundation.dart';
 
 import '../models/app_user.dart';
 import 'auth_service.dart';
-import 'user_profile_service.dart';
 
-enum SessionStatus { loading, unauthenticated, authenticated }
+enum SessionStatus { loading, signedOut, signedIn, blocked }
 
 class AppSession extends ChangeNotifier {
-  final AuthService _authService;
-  final UserProfileService _profileService;
-
-  AppSession({AuthService? authService, UserProfileService? profileService})
-    : _authService = authService ?? AuthService(),
-      _profileService = profileService ?? UserProfileService();
-
+  final AuthService service;
   StreamSubscription<User?>? _subscription;
-  SessionStatus _status = SessionStatus.loading;
-  AppUser? _user;
-  String? _errorMessage;
-  int _authRevision = 0;
+  SessionStatus status = SessionStatus.loading;
+  AppUser? user;
+  String? error;
 
-  SessionStatus get status => _status;
-  AppUser? get user => _user;
-  String? get errorMessage => _errorMessage;
-  bool get isAuthenticated => _status == SessionStatus.authenticated;
+  AppSession({AuthService? service}) : service = service ?? AuthService();
 
   void start() {
-    _subscription ??= _authService.authStateChanges.listen(_handleAuthUser);
+    _subscription = service.authChanges.listen(_handleAuth);
   }
 
-  Future<void> signIn({required String email, required String password}) async {
-    _errorMessage = null;
+  Future<void> _handleAuth(User? firebaseUser) async {
+    status = SessionStatus.loading;
     notifyListeners();
-    await _authService.signIn(email: email, password: password);
-  }
-
-  Future<void> signOut() async {
-    _errorMessage = null;
-    await _authService.signOut();
-  }
-
-  void clearError() {
-    if (_errorMessage == null) return;
-    _errorMessage = null;
-    notifyListeners();
-  }
-
-  Future<void> _handleAuthUser(User? firebaseUser) async {
-    final revision = ++_authRevision;
-
     if (firebaseUser == null) {
-      _user = null;
-      _status = SessionStatus.unauthenticated;
+      user = null;
+      status = SessionStatus.signedOut;
       notifyListeners();
       return;
     }
-
-    _status = SessionStatus.loading;
-    notifyListeners();
-
     try {
-      final profile = await _profileService.getUserProfile(firebaseUser.uid);
-      if (revision != _authRevision) return;
-
+      final profile = await service.loadProfile(firebaseUser.uid);
       if (profile == null) {
-        _errorMessage =
-            'La cuenta no tiene un perfil users/{uid} en Firestore.';
-        await _authService.signOut();
-        return;
+        error = 'La cuenta existe en Authentication, pero no tiene perfil en users.';
+        status = SessionStatus.blocked;
+      } else if (!profile.isActive) {
+        error = 'Esta cuenta se encuentra inactiva.';
+        status = SessionStatus.blocked;
+      } else {
+        user = profile;
+        status = SessionStatus.signedIn;
       }
-      if (!profile.isActive) {
-        _errorMessage = 'Esta cuenta está inactiva.';
-        await _authService.signOut();
-        return;
-      }
-
-      _user = profile;
-      _status = SessionStatus.authenticated;
-      notifyListeners();
-    } catch (_) {
-      if (revision != _authRevision) return;
-      _errorMessage = 'No se pudo cargar el perfil desde Firestore.';
-      await _authService.signOut();
+    } catch (exception) {
+      error = 'No se pudo cargar el perfil: $exception';
+      status = SessionStatus.blocked;
     }
+    notifyListeners();
+  }
+
+  Future<void> signIn(String email, String password) async {
+    error = null;
+    await service.signIn(email, password);
+  }
+
+  Future<void> signOut() async {
+    user = null;
+    await service.signOut();
+  }
+
+  Future<void> refreshProfile() async {
+    final current = service.auth.currentUser;
+    if (current != null) await _handleAuth(current);
   }
 
   @override

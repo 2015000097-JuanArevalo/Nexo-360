@@ -1,121 +1,77 @@
 import 'package:flutter/material.dart';
 
-import 'app_colors.dart';
+abstract final class NexoColors {
+  static const navy = Color(0xFF020619);
+  static const primary = Color(0xFF131954);
+  static const royalBlue = Color(0xFF0E6EC7);
+  static const cyan = Color(0xFF00A4D6);
+  static const violet = Color(0xFF5E109E);
+  static const coral = Color(0xFFD4526B);
+  static const background = Color(0xFFF4F6FB);
+  static const muted = Color(0xFF667085);
+  static const border = Color(0xFFDDE1ED);
+
+  static const brandGradient = LinearGradient(
+    colors: [royalBlue, Color(0xFF191C9F), violet],
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+  );
+}
 
 abstract final class AppTheme {
-  static ThemeData get light {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
-      brightness: Brightness.light,
-      primary: AppColors.primary,
-      secondary: AppColors.violet,
-      tertiary: AppColors.cyan,
-      surface: AppColors.surface,
-      error: AppColors.danger,
-    );
-
-    return ThemeData(
-      useMaterial3: true,
-      colorScheme: scheme,
-      scaffoldBackgroundColor: AppColors.background,
-      fontFamily: 'Roboto',
-      textTheme: const TextTheme(
-        headlineSmall: TextStyle(
-          color: AppColors.text,
-          fontWeight: FontWeight.w700,
-          letterSpacing: -.3,
+  static ThemeData light(Color seed) => ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seed,
+          brightness: Brightness.light,
         ),
-        titleLarge: TextStyle(
-          color: AppColors.text,
-          fontWeight: FontWeight.w700,
-        ),
-        titleMedium: TextStyle(
-          color: AppColors.text,
-          fontWeight: FontWeight.w700,
-        ),
-        bodyLarge: TextStyle(
-          color: AppColors.text,
-          fontWeight: FontWeight.w400,
-        ),
-        bodyMedium: TextStyle(
-          color: AppColors.text,
-          fontWeight: FontWeight.w400,
-        ),
-      ),
-      appBarTheme: const AppBarTheme(
-        backgroundColor: AppColors.navy,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: false,
-        titleTextStyle: TextStyle(
+        scaffoldBackgroundColor: NexoColors.background,
+        cardTheme: CardThemeData(
+          elevation: 0,
           color: Colors.white,
-          fontSize: 19,
-          fontWeight: FontWeight.w700,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: NexoColors.border),
+          ),
         ),
-      ),
-      cardTheme: CardThemeData(
-        color: AppColors.surface,
-        elevation: 0,
-        margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(18),
-          side: const BorderSide(color: AppColors.border),
-        ),
-      ),
-      inputDecorationTheme: InputDecorationTheme(
-        filled: true,
-        fillColor: Colors.white,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 15,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.border),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.royalBlue, width: 2),
-        ),
-      ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
+        appBarTheme: const AppBarTheme(
+          backgroundColor: NexoColors.navy,
           foregroundColor: Colors.white,
-          minimumSize: const Size(0, 50),
-          shape: RoundedRectangleBorder(
+          centerTitle: false,
+        ),
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: Colors.white,
+          border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
+            borderSide: const BorderSide(color: NexoColors.border),
           ),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
-      ),
-      outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(
-          foregroundColor: AppColors.primary,
-          minimumSize: const Size(0, 50),
+      );
+
+  static ThemeData dark(Color seed) => ThemeData(
+        useMaterial3: true,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: seed,
+          brightness: Brightness.dark,
+        ),
+        scaffoldBackgroundColor: const Color(0xFF080B19),
+        cardTheme: CardThemeData(
+          elevation: 0,
+          color: const Color(0xFF11162A),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
+            borderRadius: BorderRadius.circular(18),
+            side: const BorderSide(color: Color(0xFF2B3150)),
           ),
-          side: const BorderSide(color: AppColors.border),
-          textStyle: const TextStyle(fontWeight: FontWeight.w700),
         ),
-      ),
-      navigationBarTheme: const NavigationBarThemeData(
-        backgroundColor: Colors.white,
-        indicatorColor: Color(0xFFE2E7FF),
-        labelTextStyle: WidgetStatePropertyAll(
-          TextStyle(fontSize: 12, fontWeight: FontWeight.w700),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: NexoColors.navy,
+          foregroundColor: Colors.white,
         ),
-      ),
-      snackBarTheme: const SnackBarThemeData(
-        behavior: SnackBarBehavior.floating,
-        backgroundColor: AppColors.primaryDark,
-        contentTextStyle: TextStyle(color: Colors.white),
-      ),
-    );
-  }
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFF11162A),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+        ),
+      );
 }

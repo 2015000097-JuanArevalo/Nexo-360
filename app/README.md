@@ -1,18 +1,17 @@
-# NEXO 360 Flutter App
+# nexo_360
 
-Responsive prototype for the School Portal, student QR permissions, and events.
+A new Flutter project.
 
-## Run
+## Getting Started
 
-```bash
-flutter pub get
-flutter analyze
-flutter test
-flutter run -d chrome
-```
+This project is a starting point for a Flutter application.
 
-Firebase and role setup instructions are in `../doc/05_Prototype_Setup_and_Firebase.md`. The approved screen inventory and visual decisions are in `../doc/04_Milestone_1_Design_Freeze.md`.
+A few resources to get you started if this is your first Flutter project:
 
-Milestone 2 architecture and route guards are documented in `../doc/06_Milestone_2_Application_Foundation.md`. Demo account setup is in `../doc/07_Milestone_2_Firebase_Configuration.md`.
+- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
+- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
+- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
 
-Milestone 3 School Portal implementation is documented in `../doc/08_Milestone_3_School_Portal.md`, with Firebase deployment and testing instructions in `../doc/09_Milestone_3_Firebase_Setup.md`.
+For help getting started with Flutter development, view the
+[online documentation](https://docs.flutter.dev/), which offers tutorials,
+samples, guidance on mobile development, and a full API reference.

@@ -4,39 +4,48 @@ import 'package:go_router/go_router.dart';
 import 'core/auth/app_session.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/theme_controller.dart';
 
-class Nexo360App extends StatefulWidget {
-  const Nexo360App({super.key});
+class NexoBootstrap extends StatefulWidget {
+  const NexoBootstrap({super.key});
 
   @override
-  State<Nexo360App> createState() => _Nexo360AppState();
+  State<NexoBootstrap> createState() => _NexoBootstrapState();
 }
 
-class _Nexo360AppState extends State<Nexo360App> {
-  late final AppSession _session;
-  late final GoRouter _router;
+class _NexoBootstrapState extends State<NexoBootstrap> {
+  late final AppSession session;
+  late final ThemeController themeController;
+  late final GoRouter router;
 
   @override
   void initState() {
     super.initState();
-    _session = AppSession()..start();
-    _router = createAppRouter(_session);
+    session = AppSession()..start();
+    themeController = ThemeController()..load();
+    router = createAppRouter(session, themeController);
   }
 
   @override
   void dispose() {
-    _router.dispose();
-    _session.dispose();
+    router.dispose();
+    session.dispose();
+    themeController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      title: 'NEXO 360',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      routerConfig: _router,
+    return AnimatedBuilder(
+      animation: themeController,
+      builder: (context, _) => MaterialApp.router(
+        title: 'NEXO 360',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light(themeController.seed),
+        darkTheme: AppTheme.dark(themeController.seed),
+        themeMode: themeController.mode,
+        routerConfig: router,
+      ),
     );
   }
 }

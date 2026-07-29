@@ -1,0 +1,334 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function hasProfile() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid));
+    }
+    function profile() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    function active() { return hasProfile() && profile().status == 'active'; }
+    function technical() { return active() && profile().accountType == 'technical'; }
+    function teacher() { return active() && profile().accountType == 'teacher'; }
+    function student() { return active() && profile().accountType == 'student'; }
+    function organizer() { return active() && profile().eventRole == 'organizer'; }
+    function commissioner() { return active() && profile().eventRole == 'commissioner'; }
+    function eventManager() { return technical() || organizer(); }
+    function teacherOrTechnical() { return teacher() || technical(); }
+
+    match /users/{uid} {
+      allow get: if active() && (
+        request.auth.uid == uid || technical() ||
+        ((teacher() || organizer()) && resource.data.accountType == 'student')
+      );
+      allow list: if technical() ||
+        ((teacher() || organizer()) && resource.data.accountType == 'student');
+      allow create: if technical();
+      allow update: if technical() || (
+        active() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'phone', 'guardianPhone', 'address', 'updatedAt'
+        ])
+      ) || (
+        teacherOrTechnical() && resource.data.accountType == 'student' &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'lastAttendanceAt', 'lastAttendanceDiaryId', 'lastAttendanceStatus'
+        ])
+      );
+      allow delete: if technical();
+    }
+
+    match /directory_profiles/{uid} {
+      allow read: if active();
+      allow create, delete: if technical();
+      allow update: if technical() || (
+        active() && request.auth.uid == uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'displayName', 'updatedAt'
+        ])
+      );
+    }
+
+    match /courses/{id} {
+      allow read: if active();
+      allow write: if technical();
+    }
+
+    match /course_materials/{id} {
+      allow read: if active();
+      allow create: if teacherOrTechnical() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if technical() || (teacher() && resource.data.authorId == request.auth.uid);
+    }
+
+    match /school_activities/{id} {
+      allow read: if active();
+      allow create: if teacherOrTechnical() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if technical() || (teacher() && resource.data.teacherId == request.auth.uid);
+    }
+
+    match /activity_submissions/{id} {
+      allow read: if technical() || teacher() || (student() && resource.data.studentId == request.auth.uid);
+      allow create: if student() && request.resource.data.studentId == request.auth.uid;
+      allow update: if technical() || teacher() || (
+        student() && resource.data.studentId == request.auth.uid &&
+        request.resource.data.studentId == request.auth.uid &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'linkUrl', 'comment', 'fileUrl', 'isLate', 'submittedAt'
+        ])
+      );
+      allow delete: if technical() || (student() && resource.data.studentId == request.auth.uid);
+    }
+
+    match /school_announcements/{id} {
+      allow read: if active();
+      allow create: if teacherOrTechnical() && request.resource.data.authorId == request.auth.uid;
+      allow update, delete: if technical() || (teacher() && resource.data.authorId == request.auth.uid);
+    }
+
+    match /announcement_reads/{id} {
+      allow read: if active() && (resource.data.userId == request.auth.uid || technical());
+      allow create, update: if active() && request.resource.data.userId == request.auth.uid;
+      allow delete: if technical() || (active() && resource.data.userId == request.auth.uid);
+    }
+
+    match /timetable_periods/{id} {
+      allow read: if active();
+      allow write: if technical();
+    }
+
+    match /pedagogical_diary/{id} {
+      allow read: if active();
+      allow create, update: if technical() || (
+        teacher() && request.resource.data.teacherId == request.auth.uid
+      );
+      allow delete: if technical();
+    }
+
+    match /attendance_records/{id} {
+      allow read: if technical() || teacher() || (student() && resource.data.studentId == request.auth.uid);
+      allow create, update: if teacherOrTechnical();
+      allow delete: if technical();
+    }
+
+    match /conduct_events/{id} {
+      allow read: if technical() || teacher() || (student() && resource.data.studentId == request.auth.uid);
+      allow create: if teacherOrTechnical();
+      allow update, delete: if technical();
+    }
+
+    match /grade_items/{id} {
+      allow read: if active();
+      allow create: if teacherOrTechnical() && request.resource.data.teacherId == request.auth.uid;
+      allow update, delete: if technical() || (teacher() && resource.data.teacherId == request.auth.uid);
+    }
+
+    match /grade_scores/{id} {
+      allow get: if technical() || teacher() ||
+        (student() && resource.data.studentId == request.auth.uid);
+      allow list: if technical() ||
+        (teacher() && resource.data.teacherId == request.auth.uid) ||
+        (student() && resource.data.studentId == request.auth.uid);
+      allow create, update: if technical() || (
+        teacher() &&
+        request.resource.data.teacherId == request.auth.uid &&
+        request.resource.data.itemId is string &&
+        exists(/databases/$(database)/documents/grade_items/$(request.resource.data.itemId)) &&
+        get(/databases/$(database)/documents/grade_items/$(request.resource.data.itemId)).data.teacherId == request.auth.uid
+      );
+      allow delete: if technical();
+    }
+
+    match /school_messages/{id} {
+      allow read: if technical() || (active() && (
+        resource.data.classId == profile().classId ||
+        profile().courseIds.hasAny([resource.data.courseId])
+      ));
+      allow create: if active() && request.resource.data.authorId == request.auth.uid;
+      allow update: if technical() || (active() && resource.data.authorId == request.auth.uid);
+      allow delete: if technical();
+    }
+
+    match /permissions/{id} {
+      allow get: if technical() || teacher() || (student() && resource.data.studentId == request.auth.uid);
+      allow list: if technical() || teacher() ||
+        (student() && resource.data.studentId == request.auth.uid);
+      allow create, update, delete: if technical();
+    }
+
+    match /permission_requests/{id} {
+      allow create: if (teacher() || organizer()) && request.resource.data.requestedBy == request.auth.uid;
+      allow read: if technical() || (active() && resource.data.requestedBy == request.auth.uid);
+      allow update, delete: if technical();
+    }
+
+    match /events/{id} {
+      allow read: if resource.data.isPublic == true || active();
+      allow create: if eventManager() && request.resource.data.createdBy == request.auth.uid;
+      allow update, delete: if eventManager();
+    }
+
+    // Colección heredada del prototipo. Solo una cuenta técnica puede
+    // consultarla durante la migración; la app nueva no escribe aquí.
+    match /event_registrations/{registrationId} {
+      allow read: if technical();
+      allow write: if false;
+    }
+
+    match /event_registration_requests/{registrationId} {
+      allow create: if technical() || (
+        request.resource.data.keys().hasAll([
+          'eventId', 'eventName', 'fullName', 'email', 'phone', 'organization',
+          'area', 'category', 'trackingCode', 'authorizationFileUrl', 'status',
+          'checkedIn', 'createdAt', 'updatedAt'
+        ]) &&
+        request.resource.data.keys().hasOnly([
+          'eventId', 'eventName', 'fullName', 'email', 'phone', 'organization',
+          'area', 'category', 'trackingCode', 'authorizationFileUrl', 'status',
+          'checkedIn', 'checkedInAt', 'checkedInBy', 'reviewComment', 'reviewedBy',
+          'reviewedAt', 'createdAt', 'updatedAt'
+        ]) &&
+        request.resource.data.trackingCode == registrationId &&
+        request.resource.data.eventId is string &&
+        request.resource.data.eventId.size() >= 1 &&
+        request.resource.data.eventName is string &&
+        request.resource.data.eventName.size() >= 3 &&
+        request.resource.data.eventName.size() <= 160 &&
+        request.resource.data.fullName is string &&
+        request.resource.data.fullName.size() >= 3 &&
+        request.resource.data.fullName.size() <= 120 &&
+        request.resource.data.email is string &&
+        request.resource.data.email.size() >= 5 &&
+        request.resource.data.email.size() <= 200 &&
+        request.resource.data.phone is string &&
+        request.resource.data.phone.size() >= 8 &&
+        request.resource.data.phone.size() <= 40 &&
+        request.resource.data.organization is string &&
+        request.resource.data.organization.size() >= 2 &&
+        request.resource.data.organization.size() <= 200 &&
+        request.resource.data.area is string &&
+        request.resource.data.area.size() <= 120 &&
+        request.resource.data.category is string &&
+        request.resource.data.category.size() <= 120 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.checkedIn == false &&
+        request.resource.data.authorizationFileUrl == null &&
+        request.resource.data.createdAt == request.time &&
+        request.resource.data.updatedAt == request.time &&
+        exists(/databases/$(database)/documents/events/$(request.resource.data.eventId)) &&
+        get(/databases/$(database)/documents/events/$(request.resource.data.eventId)).data.isPublic == true &&
+        get(/databases/$(database)/documents/events/$(request.resource.data.eventId)).data.registrationOpen == true
+      );
+      allow read, update: if eventManager();
+      allow delete: if technical();
+    }
+
+    match /public_registration_status/{registrationId} {
+      allow get: if true;
+      allow list: if eventManager();
+      allow create: if eventManager() || (
+        request.resource.data.keys().hasOnly([
+          'eventId', 'eventName', 'status', 'checkedIn', 'publicComment', 'updatedAt'
+        ]) &&
+        request.resource.data.eventId is string &&
+        request.resource.data.eventId.size() >= 1 &&
+        request.resource.data.eventName is string &&
+        request.resource.data.eventName.size() >= 3 &&
+        request.resource.data.eventName.size() <= 160 &&
+        request.resource.data.publicComment is string &&
+        request.resource.data.publicComment.size() <= 500 &&
+        request.resource.data.status == 'pending' &&
+        request.resource.data.checkedIn == false &&
+        request.resource.data.updatedAt == request.time
+      );
+      allow update, delete: if eventManager();
+    }
+
+    match /event_live_locations/{id} {
+      allow read: if true;
+      allow write: if eventManager();
+    }
+
+    match /event_announcements/{id} {
+      allow read: if true;
+      allow write: if eventManager();
+    }
+
+    match /event_gallery_items/{id} {
+      allow read: if true;
+      allow create, update: if eventManager() || commissioner();
+      allow delete: if eventManager();
+    }
+
+    match /event_faqs/{id} {
+      allow read: if true;
+      allow write: if eventManager();
+    }
+
+    match /committees/{id} {
+      allow read: if active();
+      allow write: if eventManager();
+    }
+
+    match /committee_messages/{id} {
+      allow read: if eventManager() || commissioner();
+      allow create: if (eventManager() || commissioner()) &&
+        request.resource.data.authorId == request.auth.uid;
+      allow update: if technical() || (active() && resource.data.authorId == request.auth.uid);
+      allow delete: if technical() || organizer();
+    }
+
+    match /direct_messages/{id} {
+      allow read: if technical() || teacher() || (
+        (organizer() || commissioner()) &&
+        (resource.data.senderId == request.auth.uid ||
+          resource.data.recipientId == request.auth.uid)
+      );
+      allow create: if active() &&
+        (teacher() || organizer() || commissioner()) &&
+        request.resource.data.senderId == request.auth.uid &&
+        request.resource.data.recipientId is string &&
+        request.resource.data.recipientId.size() > 0 &&
+        request.resource.data.message is string &&
+        request.resource.data.message.size() > 0 &&
+        request.resource.data.message.size() <= 2000;
+      allow update: if false;
+      allow delete: if technical() || teacher() ||
+        (active() && resource.data.senderId == request.auth.uid);
+    }
+
+    match /committee_requests/{id} {
+      allow read: if active();
+      allow create: if active() && request.resource.data.authorId == request.auth.uid;
+      allow update: if eventManager() || commissioner();
+      allow delete: if eventManager();
+    }
+
+    match /inventory_items/{id} {
+      allow read: if active();
+      allow create, update: if eventManager() || commissioner();
+      allow delete: if eventManager();
+    }
+
+    match /budget_items/{id} {
+      allow read: if active();
+      allow create, update: if eventManager() || commissioner();
+      allow delete: if eventManager();
+    }
+
+    match /app_settings/{id} {
+      allow read: if active();
+      allow write: if technical();
+    }
+
+    match /audit_logs/{id} {
+      allow read: if technical();
+      allow create: if active();
+      allow update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
