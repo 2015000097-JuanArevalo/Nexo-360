@@ -1,0 +1,40 @@
+# Flutter / Dart
+.dart_tool/
+.packages
+.pub/
+build/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+
+# Platform-generated files are created with app/scripts/bootstrap_windows.ps1
+app/android/.gradle/
+app/android/local.properties
+app/windows/flutter/ephemeral/
+app/.metadata
+
+# Firebase
+firebase/.firebaserc
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Secrets / local build outputs
+.env
+*.jks
+*.keystore
+key.properties
+NEXO-360-Android.apk
+NEXO-360-Windows.zip
+
+# Old or duplicated Flutter projects
+/app_backup_duplicado*/
+/app_mezclada_*/
+/app/app/

@@ -1,159 +1,102 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../features/eventos/event_registration_screen.dart';
-import '../../features/eventos/create_event_screen.dart';
-import '../../features/eventos/eventos_screen.dart';
-import '../../features/eventos/registration_admin_screen.dart';
-import '../../features/eventos/registration_status_screen.dart';
-import '../../features/home/home_screen.dart';
-import '../../features/login/login_screen.dart';
-import '../../features/permisos/permission_form_screen.dart';
-import '../../features/permisos/pending_permission_requests_screen.dart';
-import '../../features/permisos/permisos_screen.dart';
-import '../../features/permisos/qr_validation_screen.dart';
-import '../../features/permisos/student_qr_screen.dart';
-import '../../features/portal_escolar/assignments_screen.dart';
+import '../../features/admin/technical_admin_screen.dart';
+import '../../features/auth/login_screen.dart';
+import '../../features/events/events_hub_screen.dart';
+import '../../features/home/dashboard_screen.dart';
+import '../../features/portal/portal_screen.dart';
 import '../../features/profile/profile_screen.dart';
-import '../../features/profile/presentation_setup_screen.dart';
+import '../../features/qr/qr_hub_screen.dart';
 import '../auth/app_session.dart';
-import '../models/app_user.dart';
-import '../widgets/nexo_app_shell.dart';
-import '../widgets/nexo_ui.dart';
+import '../theme/theme_controller.dart';
+import '../widgets/app_shell.dart';
+import '../widgets/common.dart';
 import 'app_routes.dart';
 
-GoRouter createAppRouter(AppSession session) {
+GoRouter createAppRouter(AppSession session, ThemeController themeController) {
   return GoRouter(
     initialLocation: AppRoutes.splash,
     refreshListenable: session,
     redirect: (context, state) {
       final path = state.uri.path;
-      final publicRoute =
-          path == AppRoutes.login ||
-          path == AppRoutes.publicRegistration ||
-          path.startsWith(AppRoutes.registrationStatus);
-
       if (session.status == SessionStatus.loading) {
         return path == AppRoutes.splash ? null : AppRoutes.splash;
       }
-
-      if (!session.isAuthenticated) {
-        return publicRoute ? null : AppRoutes.login;
+      if (session.status == SessionStatus.signedOut) {
+        return path == AppRoutes.login ? null : AppRoutes.login;
       }
-
-      if (path == AppRoutes.splash || path == AppRoutes.login) {
-        return AppRoutes.dashboard;
+      if (session.status == SessionStatus.blocked) {
+        return path == AppRoutes.splash ? null : AppRoutes.splash;
       }
-
-      final user = session.user!;
-      if (!AppRouteAccess.canOpen(path, user)) {
-        return AppRoutes.dashboard;
-      }
+      if (path == AppRoutes.splash || path == AppRoutes.login) return AppRoutes.dashboard;
+      if (path == AppRoutes.admin && session.user?.isTechnical != true) return AppRoutes.dashboard;
       return null;
     },
     routes: [
       GoRoute(
         path: AppRoutes.splash,
-        builder: (context, state) => const NexoSplashScreen(),
+        builder: (context, state) => session.status == SessionStatus.blocked
+            ? _BlockedScreen(session: session)
+            : const SplashScreen(),
       ),
-      GoRoute(
-        path: AppRoutes.login,
-        builder: (context, state) => LoginScreen(session: session),
-      ),
-      GoRoute(
-        path: AppRoutes.publicRegistration,
-        builder: (context, state) => EventRegistrationScreen(
-          eventId: state.uri.queryParameters['eventId'],
-        ),
-      ),
-      GoRoute(
-        path: AppRoutes.registrationStatus,
-        builder: (context, state) => const RegistrationStatusScreen(),
-      ),
-      GoRoute(
-        path: '${AppRoutes.registrationStatus}/:registrationId',
-        builder: (context, state) => RegistrationStatusScreen(
-          registrationId: state.pathParameters['registrationId'],
-        ),
-      ),
+      GoRoute(path: AppRoutes.login, builder: (context, state) => LoginScreen(session: session)),
       ShellRoute(
-        builder: (context, state, child) => NexoAppShell(
+        builder: (context, state, child) => AppShell(
           user: session.user!,
           currentPath: state.uri.path,
           child: child,
         ),
         routes: [
-          GoRoute(
-            path: AppRoutes.dashboard,
-            builder: (context, state) => HomeScreen(user: session.user!),
-          ),
-          GoRoute(
-            path: AppRoutes.assignments,
-            builder: (context, state) => AssignmentsScreen(user: session.user!),
-          ),
-          GoRoute(
-            path: AppRoutes.permissions,
-            builder: (context, state) => PermisosScreen(user: session.user!),
-          ),
-          GoRoute(
-            path: AppRoutes.events,
-            builder: (context, state) => EventosScreen(user: session.user!),
-          ),
+          GoRoute(path: AppRoutes.dashboard, builder: (context, state) => DashboardScreen(user: session.user!)),
+          GoRoute(path: AppRoutes.portal, builder: (context, state) => PortalScreen(user: session.user!)),
+          GoRoute(path: AppRoutes.qr, builder: (context, state) => QrHubScreen(user: session.user!)),
+          GoRoute(path: AppRoutes.events, builder: (context, state) => EventsHubScreen(user: session.user!)),
+          GoRoute(path: AppRoutes.admin, builder: (context, state) => TechnicalAdminScreen(user: session.user!)),
           GoRoute(
             path: AppRoutes.profile,
-            builder: (context, state) =>
-                ProfileScreen(user: session.user!, onSignOut: session.signOut),
+            builder: (context, state) => ProfileScreen(
+              user: session.user!,
+              themeController: themeController,
+              onSignOut: session.signOut,
+              onProfileChanged: session.refreshProfile,
+            ),
           ),
         ],
-      ),
-      GoRoute(
-        path: AppRoutes.createPermission,
-        builder: (context, state) => PermissionFormScreen(user: session.user!),
-      ),
-      GoRoute(
-        path: AppRoutes.studentPermission,
-        builder: (context, state) => StudentQrScreen(user: session.user!),
-      ),
-      GoRoute(
-        path: AppRoutes.validatePermission,
-        builder: (context, state) => const QrValidationScreen(),
-      ),
-      GoRoute(
-        path: AppRoutes.pendingPermissionRequests,
-        builder: (context, state) =>
-            PendingPermissionRequestsScreen(user: session.user!),
-      ),
-      GoRoute(
-        path: AppRoutes.createEvent,
-        builder: (context, state) => CreateEventScreen(user: session.user!),
-      ),
-      GoRoute(
-        path: AppRoutes.registrationAdmin,
-        builder: (context, state) =>
-            RegistrationAdminScreen(user: session.user!),
-      ),
-      GoRoute(
-        path: AppRoutes.presentationSetup,
-        builder: (context, state) =>
-            PresentationSetupScreen(user: session.user!),
       ),
     ],
   );
 }
 
-abstract final class AppRouteAccess {
-  static bool canOpen(String path, AppUser user) {
-    if (!user.isActive) return false;
+class _BlockedScreen extends StatelessWidget {
+  final AppSession session;
+  const _BlockedScreen({required this.session});
 
-    return switch (path) {
-      AppRoutes.createPermission =>
-        user.isTechnical || user.isTeacher || user.isEventOrganizer,
-      AppRoutes.studentPermission => user.isStudent,
-      AppRoutes.validatePermission => user.isTechnical || user.isTeacher,
-      AppRoutes.pendingPermissionRequests => user.isTechnical,
-      AppRoutes.createEvent => user.canCreateEvents,
-      AppRoutes.registrationAdmin => user.canManageEventRegistrations,
-      AppRoutes.presentationSetup => user.isTechnical,
-      _ => true,
-    };
-  }
+  @override
+  Widget build(BuildContext context) => Scaffold(
+        body: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 520),
+            child: Card(
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const NexoLogo(),
+                    const SizedBox(height: 18),
+                    const Icon(Icons.lock_person_outlined, size: 52),
+                    const SizedBox(height: 10),
+                    Text('Cuenta sin acceso', style: Theme.of(context).textTheme.headlineSmall),
+                    const SizedBox(height: 8),
+                    Text(session.error ?? 'La cuenta no tiene un perfil activo.', textAlign: TextAlign.center),
+                    const SizedBox(height: 16),
+                    FilledButton.icon(onPressed: session.signOut, icon: const Icon(Icons.logout), label: const Text('Volver al inicio de sesión')),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
 }

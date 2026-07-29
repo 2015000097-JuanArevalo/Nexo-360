@@ -1,0 +1,10 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // NEXO 360 funciona actualmente sin Firebase Storage.
+    // No despliegues otras reglas hasta que el servicio esté habilitado y revisado.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

@@ -1,0 +1,6 @@
+flutter_launcher_icons:
+  image_path: assets/images/nexo_360_icon.png
+  windows:
+    generate: true
+    image_path: assets/images/nexo_360_icon.png
+    icon_size: 256

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="NEXO 360: eventos escolares, Movimiento Juventud, inscripciones y croquis en tiempo real.">
+  <meta name="theme-color" content="#020619">
+  <title>NEXO 360 · Eventos</title>
+  <link rel="icon" href="assets/nexo-360-icon.png">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container nav">
+      <a class="brand" href="#inicio"><img src="assets/nexo-360-icon.png" alt=""><span><strong>NEXO 360</strong><small>Eventos públicos</small></span></a>
+      <button id="menu" class="menu" aria-label="Abrir menú">☰</button>
+      <nav id="nav"><a href="#eventos">Eventos</a><a href="#juventud">Juventud</a><a href="#croquis">Croquis</a><a href="#informacion">Información</a><a class="cta" href="#registro">Inscribirme</a><a href="#estado">Estado</a></nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="inicio">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">Colegio Salesiano Don Bosco · Guatemala</span>
+          <h1>Todos los eventos escolares conectados.</h1>
+          <p>Consulta eventos escolares y Movimiento Juventud, revisa avisos, reglamentos y el croquis actualizado, y envía tu inscripción desde cualquier dispositivo.</p>
+          <div class="actions"><a class="button primary" href="#eventos">Ver agenda</a><a class="button secondary" href="#registro">Enviar inscripción</a></div>
+          <div id="connection" class="connection" role="status">Conectando con Firebase…</div>
+        </div>
+        <div class="hero-art"><img src="assets/nexo-360-logo.png" alt="Logo NEXO 360"><span>Datos en tiempo real</span></div>
+      </div>
+    </section>
+
+    <section class="section" id="eventos">
+      <div class="container">
+        <div class="heading split"><div><span class="eyebrow dark">Agenda pública</span><h2>Eventos escolares y Movimiento Juventud</h2><p>La información se actualiza desde Firestore sin recargar la página.</p></div><input id="search" class="search" type="search" placeholder="Buscar evento o ubicación"></div>
+        <div class="tabs"><button class="tab active" data-type="all">Todos</button><button class="tab" data-type="school">Escolares</button><button class="tab" data-type="youth">Movimiento Juventud</button></div>
+        <div id="events" class="event-grid"><p>Cargando eventos…</p></div>
+      </div>
+    </section>
+
+    <section class="section youth" id="juventud">
+      <div class="container youth-grid">
+        <div class="youth-image"><img src="assets/juventud-2026.png" alt="Identidad Movimiento Juventud 2026"></div>
+        <div><span class="eyebrow">Movimiento Juventud</span><h2>Competencias, comisiones y experiencias en una sola sección.</h2><p>Consulta áreas, categorías, calendario, reglamentos, avisos y ubicaciones. Los organizadores administran inscripciones, inventarios, presupuestos y comisiones desde la aplicación.</p><div class="feature-grid"><article><b>Inscripciones</b><span>Solicitud, aprobación y check-in.</span></article><article><b>Croquis vivo</b><span>Actividad actual por ubicación.</span></article><article><b>Reglamentos</b><span>Enlaces y documentos organizados.</span></article><article><b>Coordinación</b><span>Comisiones y solicitudes internas.</span></article></div></div>
+      </div>
+    </section>
+
+    <section class="section soft" id="croquis">
+      <div class="container">
+        <div class="heading"><span class="eyebrow dark">Croquis en tiempo real</span><h2>¿Qué está ocurriendo en cada punto?</h2><p>Los marcadores verdes indican una actividad en curso y los anaranjados una actividad próxima.</p></div>
+        <div class="map-layout"><div id="map" class="map"><img src="assets/croquis-evento.png" alt="Croquis del Colegio Salesiano Don Bosco"><div id="markers"></div></div><aside><h3>Ubicaciones</h3><div id="map-list"><p>Cargando ubicaciones…</p></div></aside></div>
+      </div>
+    </section>
+
+    <section class="section" id="informacion">
+      <div class="container">
+        <div class="heading"><span class="eyebrow dark">Información pública</span><h2>Avisos, reglamentos y galería</h2><p>Los archivos directos se encuentran temporalmente deshabilitados; los organizadores pueden publicar enlaces externos.</p></div>
+        <div class="info-grid"><div><h3>Avisos</h3><div id="announcements" class="stack"><p>Cargando avisos…</p></div></div><div><h3>Galería y recursos</h3><div id="gallery" class="stack"><p>Cargando recursos…</p></div></div></div>
+      </div>
+    </section>
+
+    <section class="section register" id="registro">
+      <div class="container registration-grid">
+        <div><span class="eyebrow">Inscripción pública</span><h2>Envía tu solicitud.</h2><p>La solicitud quedará pendiente hasta ser revisada. Guarda el código de seguimiento que recibirás.</p><div class="maintenance"><b>☁ Nube en mantenimiento</b><p>La autorización en PDF no puede cargarse porque Firebase Storage no está activo. Puedes enviar todos los demás datos. El organizador te indicará cómo entregar el documento por otro medio.</p></div></div>
+        <form id="registration-form" class="form">
+          <label class="full"><span>Evento</span><select id="event-select" required><option value="">Selecciona un evento</option></select></label>
+          <label><span>Nombre completo</span><input id="full-name" maxlength="120" required></label>
+          <label><span>Correo electrónico</span><input id="email" type="email" maxlength="200" required></label>
+          <label><span>Teléfono</span><input id="phone" maxlength="40" required></label>
+          <label><span>Colegio u organización</span><input id="organization" maxlength="200" required></label>
+          <label><span>Área</span><input id="area" maxlength="100"></label>
+          <label><span>Categoría</span><input id="category" maxlength="100"></label>
+          <label class="full disabled"><span>Autorización en PDF</span><input type="file" disabled><small>Storage en mantenimiento.</small></label>
+          <label class="consent full"><input id="consent" type="checkbox" required><span>Confirmo que los datos son correctos y autorizo su uso para gestionar la inscripción.</span></label>
+          <div class="full form-actions"><button id="submit" class="button primary" type="submit">Enviar inscripción</button><span id="form-status" role="status"></span></div>
+        </form>
+      </div>
+    </section>
+
+    <section class="section" id="estado">
+      <div class="container status-grid"><div><span class="eyebrow dark">Seguimiento seguro</span><h2>Consulta el estado.</h2><p>La consulta pública muestra solamente el evento, estado, comentario y check-in; nunca expone datos personales.</p></div><form id="status-form" class="status-form"><input id="tracking" placeholder="Código de seguimiento" required><button class="button secondary dark">Consultar</button><div id="status-result"></div></form></div>
+    </section>
+  </main>
+
+  <footer><div class="container"><span>© <span id="year"></span> NEXO 360</span><a href="../descargas/">Descargar la aplicación</a></div></footer>
+  <dialog id="event-dialog"><button id="dialog-close" class="close">×</button><div id="dialog-content"></div></dialog>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
