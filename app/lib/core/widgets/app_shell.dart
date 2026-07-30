@@ -18,20 +18,25 @@ class AppShell extends StatelessWidget {
   });
 
   List<_Destination> get destinations => [
-        const _Destination('Inicio', Icons.dashboard_outlined, AppRoutes.dashboard),
-        const _Destination('Portal', Icons.school_outlined, AppRoutes.portal),
-        const _Destination('QR', Icons.qr_code_2_outlined, AppRoutes.qr),
-        const _Destination('Eventos', Icons.event_outlined, AppRoutes.events),
-        if (user.isTechnical)
-          const _Destination('Administración', Icons.admin_panel_settings_outlined, AppRoutes.admin),
-        const _Destination('Usuario', Icons.person_outline, AppRoutes.profile),
-      ];
+    const _Destination('Inicio', Icons.dashboard_outlined, AppRoutes.dashboard),
+    const _Destination('Portal', Icons.school_outlined, AppRoutes.portal),
+    const _Destination('QR', Icons.qr_code_2_outlined, AppRoutes.qr),
+    const _Destination('Eventos', Icons.event_outlined, AppRoutes.events),
+    if (user.isTechnical)
+      const _Destination(
+        'Administración',
+        Icons.admin_panel_settings_outlined,
+        AppRoutes.admin,
+      ),
+    const _Destination('Usuario', Icons.person_outline, AppRoutes.profile),
+  ];
 
   int get selectedIndex {
     final index = destinations.indexWhere(
-      (destination) => destination.path == AppRoutes.dashboard
-          ? currentPath == AppRoutes.dashboard
-          : currentPath.startsWith(destination.path),
+      (destination) =>
+          destination.path == AppRoutes.dashboard
+              ? currentPath == AppRoutes.dashboard
+              : currentPath.startsWith(destination.path),
     );
     return index < 0 ? 0 : index;
   }
@@ -39,17 +44,7 @@ class AppShell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final wide = MediaQuery.sizeOf(context).width >= 950;
-    final content = SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.all(22),
-        child: Center(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(maxWidth: 1240),
-            child: child,
-          ),
-        ),
-      ),
-    );
+    final content = SafeArea(child: child);
 
     return Scaffold(
       appBar: AppBar(
@@ -63,8 +58,17 @@ class AppShell extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(user.displayName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    Text(user.accountLabel, style: const TextStyle(fontSize: 11, color: Color(0xFFC7CDED))),
+                    Text(
+                      user.displayName,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text(
+                      user.accountLabel,
+                      style: const TextStyle(
+                        fontSize: 11,
+                        color: Color(0xFFC7CDED),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -80,41 +84,60 @@ class AppShell extends StatelessWidget {
           const SizedBox(width: 8),
         ],
       ),
-      body: wide
-          ? Row(
-              children: [
-                NavigationRail(
-                  backgroundColor: NexoColors.navy,
-                  selectedIndex: selectedIndex,
-                  labelType: NavigationRailLabelType.all,
-                  selectedIconTheme: const IconThemeData(color: NexoColors.cyan),
-                  unselectedIconTheme: const IconThemeData(color: Color(0xFF9AA4D3)),
-                  selectedLabelTextStyle: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                  unselectedLabelTextStyle: const TextStyle(color: Color(0xFF9AA4D3)),
-                  onDestinationSelected: (index) => context.go(destinations[index].path),
-                  destinations: destinations
-                      .map((destination) => NavigationRailDestination(
+      body:
+          wide
+              ? Row(
+                children: [
+                  NavigationRail(
+                    backgroundColor: NexoColors.navy,
+                    selectedIndex: selectedIndex,
+                    labelType: NavigationRailLabelType.all,
+                    selectedIconTheme: const IconThemeData(
+                      color: NexoColors.cyan,
+                    ),
+                    unselectedIconTheme: const IconThemeData(
+                      color: Color(0xFF9AA4D3),
+                    ),
+                    selectedLabelTextStyle: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    unselectedLabelTextStyle: const TextStyle(
+                      color: Color(0xFF9AA4D3),
+                    ),
+                    onDestinationSelected:
+                        (index) => context.go(destinations[index].path),
+                    destinations:
+                        destinations
+                            .map(
+                              (destination) => NavigationRailDestination(
+                                icon: Icon(destination.icon),
+                                label: Text(destination.label),
+                              ),
+                            )
+                            .toList(),
+                  ),
+                  Expanded(child: content),
+                ],
+              )
+              : content,
+      bottomNavigationBar:
+          wide
+              ? null
+              : NavigationBar(
+                selectedIndex: selectedIndex,
+                onDestinationSelected:
+                    (index) => context.go(destinations[index].path),
+                destinations:
+                    destinations
+                        .map(
+                          (destination) => NavigationDestination(
                             icon: Icon(destination.icon),
-                            label: Text(destination.label),
-                          ))
-                      .toList(),
-                ),
-                Expanded(child: content),
-              ],
-            )
-          : content,
-      bottomNavigationBar: wide
-          ? null
-          : NavigationBar(
-              selectedIndex: selectedIndex,
-              onDestinationSelected: (index) => context.go(destinations[index].path),
-              destinations: destinations
-                  .map((destination) => NavigationDestination(
-                        icon: Icon(destination.icon),
-                        label: destination.label,
-                      ))
-                  .toList(),
-            ),
+                            label: destination.label,
+                          ),
+                        )
+                        .toList(),
+              ),
     );
   }
 }

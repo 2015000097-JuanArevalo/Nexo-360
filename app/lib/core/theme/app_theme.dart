@@ -19,59 +19,72 @@ abstract final class NexoColors {
 }
 
 abstract final class AppTheme {
+  static const PageTransitionsTheme pageTransitions = PageTransitionsTheme(
+    builders: <TargetPlatform, PageTransitionsBuilder>{
+      TargetPlatform.android: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.iOS: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.macOS: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.linux: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.windows: FadeUpwardsPageTransitionsBuilder(),
+      TargetPlatform.fuchsia: FadeUpwardsPageTransitionsBuilder(),
+    },
+  );
+
   static ThemeData light(Color seed) => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.light,
-        ),
-        scaffoldBackgroundColor: NexoColors.background,
-        cardTheme: CardThemeData(
-          elevation: 0,
-          color: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-            side: const BorderSide(color: NexoColors.border),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: NexoColors.navy,
-          foregroundColor: Colors.white,
-          centerTitle: false,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: Colors.white,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(14),
-            borderSide: const BorderSide(color: NexoColors.border),
-          ),
-        ),
-      );
+    useMaterial3: true,
+    pageTransitionsTheme: pageTransitions,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: seed,
+      brightness: Brightness.light,
+    ),
+    scaffoldBackgroundColor: NexoColors.background,
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: NexoColors.border),
+      ),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: NexoColors.navy,
+      foregroundColor: Colors.white,
+      centerTitle: false,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(14),
+        borderSide: const BorderSide(color: NexoColors.border),
+      ),
+    ),
+  );
 
   static ThemeData dark(Color seed) => ThemeData(
-        useMaterial3: true,
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: const Color(0xFF080B19),
-        cardTheme: CardThemeData(
-          elevation: 0,
-          color: const Color(0xFF11162A),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(18),
-            side: const BorderSide(color: Color(0xFF2B3150)),
-          ),
-        ),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: NexoColors.navy,
-          foregroundColor: Colors.white,
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          filled: true,
-          fillColor: const Color(0xFF11162A),
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
-        ),
-      );
+    useMaterial3: true,
+    pageTransitionsTheme: pageTransitions,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: seed,
+      brightness: Brightness.dark,
+    ),
+    scaffoldBackgroundColor: const Color(0xFF080B19),
+    cardTheme: CardThemeData(
+      elevation: 0,
+      color: const Color(0xFF11162A),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(18),
+        side: const BorderSide(color: Color(0xFF2B3150)),
+      ),
+    ),
+    appBarTheme: const AppBarTheme(
+      backgroundColor: NexoColors.navy,
+      foregroundColor: Colors.white,
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: const Color(0xFF11162A),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
+    ),
+  );
 }
